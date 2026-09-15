@@ -886,15 +886,32 @@ function renderOrcamentos(){
   `;
 }
 
+let contatoSelecao = [];
+function toggleSelecaoContato(id){
+  const idx = contatoSelecao.indexOf(id);
+  if(idx>=0){ contatoSelecao.splice(idx,1); }
+  else {
+    if(contatoSelecao.length >= 10){ alert('Você pode selecionar até 10 contatos por vez.'); return; }
+    contatoSelecao.push(id);
+  }
+  render();
+}
+function irParaEnviarComContatos(){
+  sendState = { fornecedorId:null, tipos:[], itensPorTipo:{pasta:null,mensagem:null,orcamento:null}, contatoIds:[...contatoSelecao], canais:[], enviados:{}, modoFoto:'link' };
+  contatoSelecao = [];
+  activeTab = 'enviar';
+  render();
+}
+
 function renderContatos(){
   const rows = state.contatos.slice().reverse().map(c=>`
-    <div class="card contato-card">
+    <div class="card contato-card ${contatoSelecao.includes(c.id)?'sel':''}" onclick="toggleSelecaoContato('${c.id}')" style="cursor:pointer;">
       <div class="contato-info">
-        <div class="nome">${esc(c.nome)}</div>
+        <div class="nome">${contatoSelecao.includes(c.id)?'✓ ':''}${esc(c.nome)}</div>
         ${c.empresa?`<div class="empresa">${esc(c.empresa)}</div>`:''}
         <div class="details">${c.whatsapp?`📱 ${esc(c.whatsapp)}`:''} ${c.email?` · ✉ ${esc(c.email)}`:''}</div>
       </div>
-      <button class="del" onclick="delContato('${c.id}')" style="font-size:18px;">✕</button>
+      <button class="del" onclick="event.stopPropagation(); delContato('${c.id}')" style="font-size:18px;">✕</button>
     </div>`).join('');
 
   return `
@@ -919,6 +936,13 @@ function renderContatos(){
       </div>
       <button class="btn" style="margin-top:10px;" onclick="addContato()">Salvar contato</button>
     </div>
+    ${state.contatos.length ? `<div class="hint" style="margin:4px 0 10px;">Clique em um ou mais contatos abaixo para selecionar quem vai receber material.</div>` : ''}
+    ${contatoSelecao.length ? `
+      <div class="card" style="position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;">
+        <span>${contatoSelecao.length} de 10 selecionado(s)</span>
+        <button class="btn" onclick="irParaEnviarComContatos()">Escolher fornecedor e enviar →</button>
+        <button class="btn ghost" onclick="contatoSelecao=[];render();">Limpar seleção</button>
+      </div>` : ''}
     ${rows || '<div class="empty">Nenhum contato salvo ainda.</div>'}
   `;
 }
