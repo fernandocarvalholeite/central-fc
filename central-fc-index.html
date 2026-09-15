@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central FC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #f2f6f4;
+    --surface: #ffffff;
+    --border: #dce6e2;
+    --ink: #142621;
+    --muted: #5c6d68;
+    --teal: #0e6b62;
+    --teal-dark: #0a4f49;
+    --teal-tint: #e4f1ee;
+    --amber: #e0972e;
+    --amber-tint: #fbead2;
+    --shadow: 0 1px 2px rgba(20,38,33,.04), 0 8px 24px rgba(20,38,33,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0e1a17;
+      --surface: #142622;
+      --border: #24403a;
+      --ink: #eef5f2;
+      --muted: #9db3ac;
+      --teal: #3fb3a4;
+      --teal-dark: #2c8a7e;
+      --teal-tint: #1a332e;
+      --amber: #f0ac4c;
+      --amber-tint: #2c2213;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0e1a17;
+    --surface: #142622;
+    --border: #24403a;
+    --ink: #eef5f2;
+    --muted: #9db3ac;
+    --teal: #3fb3a4;
+    --teal-dark: #2c8a7e;
+    --teal-tint: #1a332e;
+    --amber: #f0ac4c;
+    --amber-tint: #2c2213;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 40px 20px;
+    padding-block: 40px;
+    min-height: 100%;
+  }
+  .wrap{
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ---- header / brand mark ---- */
+  .brandmark{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom: 34px;
+  }
+  .bars{
+    display:flex;
+    gap:4px;
+    height: 30px;
+    flex: none;
+  }
+  .bars span{
+    width: 7px;
+    border-radius: 2px;
+    display:block;
+  }
+  .bars span:nth-child(1){ background: var(--teal); height: 60%; align-self:flex-end; }
+  .bars span:nth-child(2){ background: var(--teal-dark); height: 100%; }
+  .bars span:nth-child(3){ background: var(--amber); height: 78%; align-self:flex-end; }
+  .brand-text .eyebrow{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: .2px;
+    line-height: 1.1;
+  }
+  .brand-text .eyebrow span{ color: var(--teal); }
+  .brand-text .sub{
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  p.lead{
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.55;
+    margin: 0 0 30px;
+    max-width: 46ch;
+  }
+
+  /* ---- app list ---- */
+  .apps{
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+  }
+  .app{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-decoration:none;
+    color: inherit;
+    box-shadow: var(--shadow);
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .app:hover{ transform: translateY(-1px); border-color: var(--teal); }
+  .app:focus-visible{ outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .app-icon{
+    flex: none;
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--teal-tint);
+    color: var(--teal-dark);
+  }
+  .app-icon svg{ width: 22px; height: 22px; }
+  .app.amber .app-icon{ background: var(--amber-tint); color: var(--amber); }
+
+  .app-body{ flex: 1; min-width: 0; }
+  .app-name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15.5px;
+  }
+  .app-desc{
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .app-go{
+    flex: none;
+    color: var(--muted);
+  }
+  .app-go svg{ width:16px; height:16px; display:block; }
+
+  .note{
+    margin-top: 28px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--teal-tint);
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--teal-dark);
+    line-height: 1.5;
+  }
+  :root[data-theme="dark"] .note, @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .note{ color: var(--teal); } }
+
+  footer{
+    margin-top: 30px;
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <div class="brandmark">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <div class="brand-text">
+      <div class="eyebrow">FC <span>Consultoria</span></div>
+      <div class="sub">Esquadrias de Alumínio</div>
+    </div>
+  </div>
+
+  <h1>Central de acessos</h1>
+  <p class="lead">Um único login para os três sistemas — entre em qualquer um deles e os outros já reconhecem sua sessão.</p>
+
+  <div class="apps">
+    <a class="app" href="https://fernandocarvalholeite.github.io/fc-representacoes" target="_blank" rel="noopener">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7l9 6 9-6"/>
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+        </svg>
+      </div>
+      <div class="app-body">
+        <div class="app-name">FC Representações</div>
+        <div class="app-desc">Fornecedores, orçamentos e envio de material aos clientes</div>
+      </div>
+      <div class="app-go">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </div>
+    </a>
+
+    <a class="app amber" href="https://fernandocarvalholeite.github.io/orcamentos-engefitas" target="_blank" rel="noopener">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="3" width="16" height="18" rx="2"/>
+          <path d="M8 8h8M8 12h8M8 16h5"/>
+        </svg>
+      </div>
+      <div class="app-body">
+        <div class="app-name">Orçamentos Engefitas / ProGlaze</div>
+        <div class="app-desc">Orçamentos, produtos e fretes</div>
+      </div>
+      <div class="app-go">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </div>
+    </a>
+
+    <a class="app" href="https://fernandocarvalholeite.github.io/controle-vendas-apostilas" target="_blank" rel="noopener">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19h16"/>
+          <rect x="6" y="12" width="3" height="7"/>
+          <rect x="11" y="8" width="3" height="11"/>
+          <rect x="16" y="4" width="3" height="15"/>
+        </svg>
+      </div>
+      <div class="app-body">
+        <div class="app-name">Controle de Vendas — Apostilas</div>
+        <div class="app-desc">Vendas, estoque e acertos</div>
+      </div>
+      <div class="app-go">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </div>
+    </a>
+  </div>
+
+  <div class="note">Trocar a senha em qualquer um dos três sistemas já atualiza o acesso nos outros.</div>
+
+  <footer>FC Consultoria em Esquadria</footer>
+</div>
+
+</body>
+</html>
