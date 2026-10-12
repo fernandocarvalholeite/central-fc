@@ -54,6 +54,8 @@ section{display:flex;flex-direction:column;gap:18px;scroll-margin-top:64px}
 .fig.rev{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr)}.fig.rev figure{order:2}
 figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 figure img{display:block;width:100%;height:auto}
+.vbox video{display:block;width:100%;height:auto;background:#252b33;aspect-ratio:16/9}
+.vid{scroll-margin-top:64px}
 figcaption{font-size:13px;color:var(--muted);padding:8px 12px;border-top:1px solid var(--line)}
 .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:s}
 .steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;min-width:0}
@@ -90,9 +92,9 @@ html{scroll-behavior:smooth}
 <div class="acesso">
   <div class="box hl">
     <div class="eb">Link de acesso</div>
-    <div class="url" id="u">fernandocarvalholeite.github.io/central-fc/treinamento/</div>
+    <div class="url" id="u">fc-consultoria.github.io/treinamento/</div>
     <div class="row">
-      <a class="btn" href="https://fernandocarvalholeite.github.io/central-fc/treinamento/" target="_blank" rel="noopener">Abrir o treinamento</a>
+      <a class="btn" href="https://fc-consultoria.github.io/treinamento/" target="_blank" rel="noopener">Abrir o treinamento</a>
       <button class="btn sec" type="button" id="cp">Copiar link</button>
     </div>
     <div class="dev">
@@ -108,7 +110,14 @@ html{scroll-behavior:smooth}
   </div>
 </div>
 
+<section id="video" class="vid">
+  <div class="cap"><span class="num">▶</span><h2>Assista primeiro: o tutorial em vídeo</h2></div>
+  <p class="intro">Em menos de 3 minutos você vê tudo funcionando: entrar, girar a janela, peças e perfis, desmontar, cortes e os 3 desafios.</p>
+  <figure class="vbox"><video controls preload="metadata" playsinline poster="video/capa.jpg" src="video/tutorial_treinamento_fc3d.mp4">Seu navegador não abre o vídeo.</video><figcaption>Tutorial · Treinamento FC 3D (sem som, com legendas)</figcaption></figure>
+</section>
+
 <nav class="toc" aria-label="Capítulos do guia"><ol>
+  <li><a href="#video"><b>▶</b>Vídeo</a></li>
   <li><a href="#entrar"><b>1</b>Entrar</a></li>
   <li><a href="#tela"><b>2</b>A tela</a></li>
   <li><a href="#conhecer"><b>3</b>Conhecer a esquadria</a></li>
@@ -265,7 +274,7 @@ html{scroll-behavior:smooth}
 <footer><span>FC Consultoria em Esquadria · Sinop-MT</span><span>Treinamento FC 3D · Linhas Suprema e Gold</span></footer>
 </div>
 <script>
-document.getElementById('cp').addEventListener('click',async e=>{const b=e.currentTarget,t='https://fernandocarvalholeite.github.io/central-fc/treinamento/';
+document.getElementById('cp').addEventListener('click',async e=>{const b=e.currentTarget,t='https://fc-consultoria.github.io/treinamento/';
   try{await navigator.clipboard.writeText(t);b.textContent='Link copiado';}catch(_){const r=document.createRange();r.selectNodeContents(document.getElementById('u'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selecionado: copie';}
   setTimeout(()=>b.textContent='Copiar link',2000);});
 </script>
