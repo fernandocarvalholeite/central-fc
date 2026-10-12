@@ -89,7 +89,7 @@ tbody tr:hover td{background:#f5f8fa}
  </section>
  <section class="card">
   <h2>Alunos</h2>
-  <p class="ihint">Clique no nome ou no login para editar · Enter salva · Esc desfaz. O login novo vale no próximo acesso do aluno (a senha continua a mesma).</p>
+  <p class="ihint">Clique no nome ou no login para editar · Enter salva · Esc desfaz. O login novo vale no próximo acesso do aluno (a senha continua a mesma). Maiúsculas aparecem no painel, mas o aluno pode digitar o login com ou sem maiúsculas.</p>
   <p class="msg bad" id="tbMsg" hidden></p>
   <div class="tw"><table>
    <thead><tr><th>Aluno</th><th>Login</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Desafios</th><th>Estrelas</th><th>Melhor teste</th></tr></thead>
@@ -155,7 +155,7 @@ function render(){
         else{if(!v){inp.value=orig;inp.disabled=false;return;}({error}=await sb.rpc('trein_set_login',{alvo:a.user_id,novo:v}));}
         inp.disabled=false;inp.classList.toggle('ok',!error);inp.classList.toggle('bad',!!error);
         if(error){inp.title='Não salvou: '+error.message;alert0(error.message);inp.value=orig;}
-        else{if(k==='login')inp.value=v.toLowerCase();a[k]=k==='login'?v.toLowerCase():(v||null);inp.title=k==='login'?'Login salvo. O aluno passa a entrar com '+a.login:'Nome salvo';setTimeout(()=>inp.classList.remove('ok'),1500);if(sel===a.user_id)detalhe();}});});
+        else{a[k]=k==='login'?v:(v||null);inp.title=k==='login'?'Login salvo. O aluno passa a entrar com '+a.login:'Nome salvo';setTimeout(()=>inp.classList.remove('ok'),1500);if(sel===a.user_id)detalhe();}});});
     tb.appendChild(tr);});
   document.getElementById('k1').textContent=ALUNOS.filter(a=>a.ativo).length;
   document.getElementById('k2').textContent=ativos7;
