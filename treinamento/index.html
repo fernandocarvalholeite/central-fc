@@ -130,7 +130,8 @@ aside{display:flex;flex-direction:column;gap:14px;min-width:0}
 .wvrow .lb i{display:block;text-transform:none;font-style:normal;color:#6b7781;font-size:11px;margin-top:2px}
 .wvrow select,.wvrow input{font:inherit;font-size:13px;padding:6px 8px;border:1px solid #e3a9a9;border-radius:6px;background:#ffd6d6;color:#3a2a2a;width:100%;min-width:0}
 .wvrow.ok select,.wvrow.ok input{background:#d9f2df;border-color:#8fcf9d}.wvrow.bad select,.wvrow.bad input{background:#ffb8b8;border-color:#d06060}
-.wvrow input{text-align:right}.wvrow .warn{grid-column:2/4;font-size:11px;color:#8a5a00;background:#fff6dd;border-radius:5px;padding:4px 6px}
+.wvrow input{text-align:right}.wvsee{display:inline-block;margin-top:4px;font:inherit;font-size:11px;padding:2px 8px;border:1px solid #c9d3da;border-radius:10px;background:#fff;color:#1d3f57;cursor:pointer;text-transform:none}.wvsee:hover{border-color:#1f6f9a;background:#eef5fa}
+#c-wv .p3d{margin:2px 0 6px}.wvrow .warn{grid-column:2/4;font-size:11px;color:#8a5a00;background:#fff6dd;border-radius:5px;padding:4px 6px}
 .wvped{background:#eef5fa;border:1px solid #c7dbe8;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.45}.wvped ul{margin:6px 0 0;padding-left:18px}
 .wvact{display:flex;gap:8px;flex-wrap:wrap}.btn.sec{background:#fff;color:#1d3f57;border:1px solid #c9d3da}
 .wvres{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}.wvres .stars{font-size:26px}.wvres ul{margin:6px 0 0;padding-left:18px}
@@ -934,22 +935,23 @@ function build(){
       const P=g.attributes.position,hh=d.h*k;for(let i=0;i<P.count;i++){const z=P.getZ(i),y=P.getY(i),sg=z>0?1:-1;if(mode==='m')P.setZ(i,z+sg*y);else if(mode==='mi')P.setZ(i,z-sg*y);}
       g.applyMatrix4(new THREE.Matrix4().makeBasis(Z,out,dir));g.computeVertexNormals();
       const mat=matFor('marco',c,c.startsWith('CM')?CMM:ARM);mat.side=THREE.DoubleSide;const m=new THREE.Mesh(g,mat);m.position.copy(pos);m.position.z=zpos;
-      m.userData={zone:c,lbl,part:'marco',vert:Math.abs(dir.y)>.5,code:c,cap:{shapes,ex:Z,ey:out,ez:dir}};group.add(m);profMeshes.push(m);zoneMeshes.push(m);if(lbl)labelObjs.push(m);LEN[c]=(LEN[c]||0)+len;return m;};
+      m.userData={zone:c,lbl,part:'marco',vert:Math.abs(dir.y)>.5,code:c,cap:{shapes,ex:Z,ey:out,ez:dir}};group.add(m);reg(m);profMeshes.push(m);zoneMeshes.push(m);if(lbl)labelObjs.push(m);LEN[c]=(LEN[c]||0)+len;return m;};
     const CMM=new THREE.MeshStandardMaterial({color:0x6a747b,metalness:.45,roughness:.5}),ARM=new THREE.MeshStandardMaterial({color:0xd9dee2,metalness:.2,roughness:.5});
     const C=a.C||'CM-200',cw=SHAPES[C].w/1000,ch=SHAPES[C].h/1000,ix=W/2+fx,iy=H/2+fy,V3=(x,y,z)=>new THREE.Vector3(x,y,z);
     /* contramarco: aba de 24 mm no lado externo, alma apoiada no vão da alvenaria, garras para dentro da massa; a janela encosta na aba */
+    const SK=(sx,sy)=>sx<0?'left':sx>0?'right':sy>0?'top':'bot';
     const DSL=PW(fr.s)/2,yw=C==='CM-174'?.0125:.0098,zc=-DSL+cw/2-.0013,ox=ix+yw,oy=iy+yw;
     if(a.C)[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0,m45=a.W==='45',len=vert?2*oy:(m45?2*ox:2*(ox-ch));
-      piece(C,len,vert?Y:X,V3(-sx,-sy,0),V3(sx*ox,sy*oy,0),m45?'mi':'',zc,i===0);});
-    if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,cw*.6),cm);b.position.set(sx*(ox-.012),sy*(oy-.012),zc);group.add(b);}));}
+      RK='W-cm-'+SK(sx,sy);piece(C,len,vert?Y:X,V3(-sx,-sy,0),V3(sx*ox,sy*oy,0),m45?'mi':'',zc,i===0);});
+    if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,cw*.6),cm);b.position.set(sx*(ox-.012),sy*(oy-.012),zc);RK='W-cm-'+SK(sx,0);group.add(b);reg(b);}));}
     /* arremate: moldura com corte 45° sobre o quadro (SU-001 / SU-003 / SU-002) pelo lado de dentro */
     if(a.A==='MP-347'){const aw=SHAPES['MP-347'].w/1000,zi=DSL+aw/2+.001,ax=W/2-.004,ay=H/2-.004;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
-      piece('MP-347',vert?2*ay:2*ax,vert?Y:X,V3(sx,sy,0),V3(sx*ax,sy*ay,0),'m',zi,i===0);});
+      RK='W-ar-'+SK(sx,sy);piece('MP-347',vert?2*ay:2*ax,vert?Y:X,V3(sx,sy,0),V3(sx*ax,sy*ay,0),'m',zi,i===0);});
       /* presilhas de nylon NYL-190 presas no quadro com parafuso PAR-936 */
       const pm=new THREE.MeshStandardMaterial({color:0xf3f3ee,roughness:.6}),nP=L=>Math.max(2,Math.ceil(L/.45)+1);
       [[1,0],[-1,0],[0,1],[0,-1]].forEach(([sx,sy])=>{const vert=sx!==0,L=vert?H-.12:W-.12,n=nP(L);
         for(let k=0;k<n;k++){const t=-L/2+k*L/(n-1),b=new THREE.Mesh(new THREE.BoxGeometry(vert?.006:.018,vert?.018:.006,.01),pm);
-          b.position.set(vert?sx*(W/2+.002):t,vert?t:sy*(H/2+.002),DSL-.004);group.add(b);}});}
+          b.position.set(vert?sx*(W/2+.002):t,vert?t:sy*(H/2+.002),DSL-.004);RK='F-'+SK(sx,sy);group.add(b);reg(b);}});}
     RK=RK0;}
   RK='F-left';prof(group,fr.s,H+PBX,LROT?neg(Z):Z,X,LROT?Y:Y,-W/2+FS/2,PBX/2,LZ,'marco',fr.s,M.al,true);
   RK='F-right';prof(group,fr.s,H+PBX,Z,neg(X),Y,W/2-FS/2,PBX/2,LZ,'marco',fr.s,M.al,true);
@@ -1213,6 +1215,7 @@ function desmPreset(){
   const V=(x,y,z)=>new THREE.Vector3(x,y,z),F=.16,P=.07,off={},grp={};
   const dir=k=>{const s=k.split('-').pop();
     if(k.startsWith('F-cf-'))return V(k.endsWith('L')?.08:-.08,0,.05);
+    if(k.startsWith('W-')){const sd=s==='left'?V(-1,0,0):s==='right'?V(1,0,0):s==='top'?V(0,1,0):V(0,-1,0);return sd.multiplyScalar(k.startsWith('W-cm')?.22:.30).add(V(0,0,k.startsWith('W-cm')?-.5:.42));}
     if(k.startsWith('P-')){const D=V(0,.40,-.85);return s==='top'?D.add(V(0,.55,0)):s==='front'?D.add(V(0,.28,-.45)):s==='back'?D.add(V(0,.28,.45)):s==='base'?D.add(V(0,-.16,-.25)):s==='eixo'?D:s==='L'?D.add(V(-.25,0,0)):s==='R'?D.add(V(.25,0,0)):null;}
     if(/^F|^B\d/.test(k)){return s==='left'?V(-F,0,0):s==='right'?V(F,0,0):s==='top'?V(0,F,0):s==='bot'?V(0,-F,0):s==='mid'?V(0,.05,0):null;}
     return s==='L'?V(-P,0,0):s==='R'?V(P,0,0):s==='top'?V(0,P,0):s==='bot'?V(0,-P,0):s==='mid'?V(0,0,.03):s==='glass'?V(0,0,.09):null;};
@@ -1716,7 +1719,7 @@ function syncPanel(){
     if(S.usFocus||compPinned){}
     else if(hasSel&&!sp.z.includes(curProf))showProfile(sp.z[0]);
     else if(!curProf||String(curProf).startsWith('us:'))showProfile('SU-001');
-    if(wasHidden)document.getElementById('side').scrollTo({top:0,behavior:'smooth'});
+    if(wasHidden&&!S.wvOn)document.getElementById('side').scrollTo({top:0,behavior:'smooth'});
     resize2();
   }
   resize();
@@ -1895,6 +1898,7 @@ function setMode(m){
   document.getElementById('v-desm').hidden=m==='test';if(m==='test'&&DESM){DESM=false;EXE=0;const b=document.getElementById('v-desm');b.setAttribute('aria-pressed','false');b.textContent='Desmontar';}
   if(m!=='test'){document.getElementById('tres').hidden=true;document.getElementById('tpop').hidden=true;thint.hidden=true;}
   if(m==='test'){resetOpen();cv.style.cursor='grab';}
+  if(!wv&&was)p3dHomeBack();
   build();if(wv&&!was)wvNewPed();
 }
 document.getElementById('m-exp').addEventListener('click',()=>setMode('exp'));
@@ -1912,14 +1916,34 @@ const WVTXT={C:{'CM-200':'contramarco estreito, de 26,5 mm','CM-060':'contramarc
   B:{'quadrado':'baguete quadrado','qa':'baguete quadrado + arredondado'},
   F:{'trava':'fecho concha com trava, sem chave','chave':'fecho concha com chave'},
   V:{'ROL-440':'folhas leves (até 40 kg cada)','ROL-439':'folhas pesadas, vidro grosso (40 a 80 kg cada)'}};
-function wvRender(){const q=document.getElementById('wvQ'),a=S.wv;
-  q.innerHTML=WVQ.map(x=>`<div class="wvrow" data-k="${x.k}"><span class="lt">${x.k}</span><span class="lb">${x.l}<i>${x.n!=null?'':x.i}</i></span>${x.n!=null
+/* aprender respondendo: cada resposta mostra o perfil em 3D logo abaixo da pergunta e leva a câmera até a peça na janela */
+let P3DHOME=null;
+function p3dHomeBack(){if(P3DHOME&&p3d.parentNode!==P3DHOME.par){P3DHOME.par.insertBefore(p3d,P3DHOME.next);resize2();}}
+function wvFoc(k){const a=S.wv,m=(a.M||'+').split('+');
+  switch(k){case 'C':case 'W':case 'X':case 'Y':return a.C?{p:a.C}:null;case 'A':return a.A==='MP-347'?{p:'MP-347'}:null;
+    case 'R':return a.R?{p:a.R==='SU-003'?'SU-003':'SU-291'}:null;case 'O':return a.O?{p:a.O==='larga'?'SU-225':'SU-053'}:null;
+    case 'E':return a.E?{p:a.E}:null;case 'M':return a.M?{p:m[0]!=='SU-040'?m[0]:m[1]!=='SU-041'?m[1]:m[0]}:null;
+    case 'B':return a.B?{p:'SU-102'}:null;case 'F':return a.F?{c:'FEC-636'}:null;case 'V':return a.V?{c:a.V==='ROL-439'?'ROL-439':'ROL-426'}:null;}return null;}
+function wvShow(k,row){const f=wvFoc(k);if(!P3DHOME)P3DHOME={par:p3d.parentNode,next:p3d.nextSibling};
+  S.comp=null;compPinned=null;
+  if(!f){S.sel=null;S.find=null;curProf=null;build();syncPanel();p3dHomeBack();return;}
+  row.after(p3d);
+  if(f.p){const c=f.p;if(!ALLP.find(q=>q.c===c)&&PN[c])ALLP.push({c,n:PN[c].n,h:PN[c].h});applyFind(c);
+    const bx=new THREE.Box3();let one=null;group.traverse(o=>{if(!one&&o.isMesh&&o.userData&&(o.userData.code===c||o.userData.zone===c)&&o.visible)one=o;});if(one)bx.setFromObject(one);
+    if(!bx.isEmpty()){const ctr=new THREE.Vector3();bx.getCenter(ctr);const sz=new THREE.Vector3();bx.getSize(sz);
+      const pt=sz.x>sz.y?new THREE.Vector3(ctr.x+sz.x*.3,bx.max.y,ctr.z):new THREE.Vector3(bx.max.x,ctr.y+sz.y*.25,ctr.z);if(bx.max.x<0)pt.x=bx.min.x;
+      CT.copy(pt);const dir=camera.position.clone().sub(controls.target).normalize();if(Math.abs(dir.z)<.35){dir.z=.6;dir.normalize();}camTarget=pt.clone().add(dir.multiplyScalar(.5));}}
+  else{S.sel=null;S.find=null;S.comp=f.c;compPinned=f.c;build();showComp3D(f.c);syncPanel();focusComp(f.c);}
+  resize2();}
+function wvRender(){p3dHomeBack();const q=document.getElementById('wvQ'),a=S.wv;
+  q.innerHTML=WVQ.map(x=>`<div class="wvrow" data-k="${x.k}"><span class="lt">${x.k}</span><span class="lb">${x.l}<i>${x.n!=null?'':x.i}</i><button type="button" class="wvsee">Ver no 3D</button></span>${x.n!=null
     ?`<input type="number" step="0.5" min="0" value="${a[x.k]}" aria-label="${x.l} (mm)">`
     :`<select aria-label="${x.l}"><option value="">Selecione</option>${x.o.map(([v,t])=>`<option value="${v}"${a[x.k]===v?' selected':''}>${t}</option>`).join('')}</select>`}
     ${x.n!=null?'<span class="warn">Medida de auxílio para o plano de corte. Não alterar sem orientação técnica da produção da serralheria.</span>':''}</div>`).join('');
   q.querySelectorAll('.wvrow').forEach(r=>{const k=r.dataset.k,el=r.querySelector('select,input');
     el.addEventListener('change',()=>{S.wv[k]=el.tagName==='INPUT'?(+el.value||0):el.value;r.classList.remove('ok','bad');document.getElementById('wvRes').hidden=true;
-      trk('wv_resp',{k,v:S.wv[k]});if(S.wv[k]!=='')build();wvList();});});
+      trk('wv_resp',{k,v:S.wv[k]});build();wvList();wvShow(k,r);});
+    r.querySelector('.wvsee').addEventListener('click',()=>wvShow(k,r));});
   wvList();}
 function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
   const lat=a.R==='SU-007+SU-291';
@@ -1936,7 +1960,7 @@ function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,
   if(a.A==='MP-347'){const nP=L=>Math.max(2,Math.ceil(L/450)+1),n=2*nP(S.h-120)+2*nP(S.w-120);add(cr,'NYL-190','Presilha de nylon do alisar',n+' un');add(cr,'PAR-936','Parafuso de fixação da presilha',n+' un');}
   document.getElementById('wvList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Qtd</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes que mudam com as respostas</td></tr>${cr.join('')}</table>
     <p class="note">Medidas de corte entram quando tivermos a lista do WVetro para conferir. Folgas: ${a.X} mm na largura e ${a.Y} mm na altura.</p>`;}
-function wvNewPed(){const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y};
+function wvNewPed(){S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y};
   keys.forEach(k=>{const o=WVQ.find(x=>x.k===k).o;WVP[k]=o[Math.floor(Math.random()*o.length)][0];});
   document.getElementById('wvPed').innerHTML=`<b>Pedido do cliente · JCR 200 · ${S.w} × ${S.h} mm</b><ul>${keys.map(k=>`<li>${WVTXT[k][WVP[k]]}</li>`).join('')}<li>folgas padrão da serralheria</li></ul>`;
   WVQ.forEach(x=>{S.wv[x.k]=x.n!=null?x.n:'';});document.getElementById('wvRes').hidden=true;wvRender();build();trk('wv_pedido',{p:WVP});}
