@@ -86,7 +86,7 @@ tbody tr:hover td{background:#f5f8fa}
  <section class="card">
   <h2>Alunos</h2>
   <div class="tw"><table>
-   <thead><tr><th>Aluno</th><th>Login</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Testes</th><th>Melhor teste</th></tr></thead>
+   <thead><tr><th>Aluno</th><th>Login</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Testes</th><th>Estrelas</th><th>Melhor teste</th></tr></thead>
    <tbody id="tb"></tbody>
   </table></div>
  </section>
@@ -123,8 +123,11 @@ function resumo(uid){
   ev.forEach(e=>{if(!ult||e.criado_em>ult)ult=e.criado_em;const d=e.detalhe||{};
     if(e.tipo==='tempo')seg+=d.s||60;if(e.tipologia&&e.tipo!=='login')tip.add(e.tipologia);
     if(e.tipo==='corte')cor.add((d.t||'')+'·'+d.k);if(e.tipo==='perfil')per.add(d.c);if(e.tipo==='teste')tes.push(d);});
-  const melhor=tes.slice().sort((x,y)=>(x.err-y.err))[0];
-  return {ev,tip,cor,per,tes,seg,ult,melhor};
+  tes.forEach(x=>{if(x.pct==null)x.pct=Math.round(x.tot/((x.tot+x.err)||1)*100);if(x.stars==null)x.stars=x.pct>=90?3:x.pct>=70?2:1;});
+  const best={};tes.forEach(x=>{const b=best[x.t];if(!b||x.stars>b.stars||(x.stars===b.stars&&x.pct>b.pct))best[x.t]=x;});
+  const estrelas=Object.values(best).reduce((a,x)=>a+x.stars,0);
+  const melhor=tes.slice().sort((x,y)=>(y.pct-x.pct))[0];
+  return {ev,tip,cor,per,tes,seg,ult,melhor,estrelas,best};
 }
 function render(){
   const sem=Date.now()-7*864e5;let h=0,t=0,ativos7=0;
@@ -134,8 +137,8 @@ function render(){
     tr.innerHTML=`<td><strong>${a.nome||'<span class="note">sem nome</span>'}</strong></td><td class="n" style="text-align:left">${a.login}</td>
       <td><span class="tag ${a.ativo?'':'off'}">${a.ativo?'ativo':'bloqueado'}</span></td><td class="n">${fmtD(r.ult)}</td><td class="n">${fmtH(r.seg)}</td>
       <td><div style="display:flex;gap:8px;align-items:center"><div class="bar" style="flex:1"><i style="width:${Math.round(r.tip.size/NT*100)}%"></i></div><span class="n">${r.tip.size}/${NT}</span></div></td>
-      <td class="n">${r.cor.size}</td><td class="n">${r.per.size}</td><td class="n">${r.tes.length}</td>
-      <td class="n">${r.melhor?`${r.melhor.ok}/${r.melhor.tot} · ${r.melhor.err} erro${r.melhor.err===1?'':'s'}`:'—'}</td>`;
+      <td class="n">${r.cor.size}</td><td class="n">${r.per.size}</td><td class="n">${r.tes.length}</td><td class="n" style="color:#b8860b">★ ${r.estrelas}/${NT*3}</td>
+      <td class="n">${r.melhor?`${r.melhor.pct}% · ${TIPOS[r.melhor.t]||''}`:'—'}</td>`;
     tr.addEventListener('click',()=>{sel=a.user_id;render();detalhe();});tb.appendChild(tr);});
   document.getElementById('k1').textContent=ALUNOS.filter(a=>a.ativo).length;
   document.getElementById('k2').textContent=ativos7;
@@ -150,9 +153,9 @@ function detalhe(){
   document.getElementById('eNome').value=a.nome||'';document.getElementById('bAtivo').textContent=a.ativo?'Bloquear acesso':'Liberar acesso';
   document.getElementById('cTip').innerHTML=Object.entries(TIPOS).map(([k,n])=>`<li class="${r.tip.has(k)?'on':''}">${n}</li>`).join('');
   document.getElementById('cCor').textContent=r.cor.size?[...r.cor].map(x=>{const [t,k]=x.split('·');return (TIPOS[t]||t)+' ('+({esq:'lateral esq.',dir:'lateral dir.',sup:'superior',inf:'inferior',trav:'travessa'}[k]||'encontro')+')';}).join(' · '):'Nenhum corte aberto ainda.';
-  document.getElementById('cTes').textContent=r.tes.length?r.tes.map(x=>`${TIPOS[x.t]||x.t}: ${x.ok}/${x.tot} perfis, ${x.err} erro${x.err===1?'':'s'}`).join(' · '):'Nenhum teste concluído ainda.';
+  document.getElementById('cTes').textContent=r.tes.length?Object.values(r.best).map(x=>`${TIPOS[x.t]||x.t}: ${'★'.repeat(x.stars)}${'☆'.repeat(3-x.stars)} ${x.pct}%${x.nivel?(x.nivel==='desm'?' (desmontada)':' (montada)'):''}`).join(' · ')+` — ${r.tes.length} teste${r.tes.length===1?'':'s'} feitos`:'Nenhum teste concluído ainda.';
   document.getElementById('tl').innerHTML=r.ev.filter(e=>ROT[e.tipo]).slice(0,150).map(e=>{const d=e.detalhe||{};
-    const CK={esq:'lateral esquerda',dir:'lateral direita',sup:'superior',inf:'inferior',trav:'travessa'};const x=e.tipo==='perfil'?d.c:e.tipo==='componente'?d.c:e.tipo==='corte'?(CK[d.k]||'encontro das folhas'):e.tipo==='troca'?`${d.de} → ${d.para}`:e.tipo==='teste'?`${d.ok}/${d.tot}, ${d.err} erros`:e.tipo==='modo'?(d.m==='test'?'Teste dos perfis':'Explorar'):'';
+    const CK={esq:'lateral esquerda',dir:'lateral direita',sup:'superior',inf:'inferior',trav:'travessa'};const x=e.tipo==='perfil'?d.c:e.tipo==='componente'?d.c:e.tipo==='corte'?(CK[d.k]||'encontro das folhas'):e.tipo==='troca'?`${d.de} → ${d.para}`:e.tipo==='teste'?`${d.pct!=null?d.pct:Math.round(d.tot/((d.tot+d.err)||1)*100)}%${d.stars?' '+'★'.repeat(d.stars):''}`:e.tipo==='modo'?(d.m==='test'?'Teste dos perfis':'Explorar'):'';
     return `<li><time>${fmtD(e.criado_em)}</time><span>${ROT[e.tipo]} ${x?'<strong>'+x+'</strong>':''} <span class="note">${TIPOS[e.tipologia]||''}</span></span></li>`;}).join('')||'<li><span class="note">Sem atividades.</span></li>';
 }
 const msg=(t,ok)=>{const m=document.getElementById('eMsg');m.textContent=t;m.className='msg '+(ok?'ok':'bad');};
