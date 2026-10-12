@@ -678,7 +678,7 @@ const USIN=[
   {id:'1202',s:'Furos de fixação dos trilhos',n:'Furação do marco lateral para fixação dos trilhos',p:['SU-003'],c:'Parafusos que prendem o marco lateral nos trilhos.',m:'Furos Ø5 a 17 mm da ponta, a 18 mm da borda e espaçados 35 mm (2 ou 3 furos)',o:''}
 ];
 const COMP=[
-  {c:'REC-013',n:'Recolhedor e mola de retorno',d:'Persiana de enrolar (Linha Gold). Fica na ponta do eixo MN-015 e ajuda a enrolar a cortina.',q:'',m:''},
+  {c:'REC-013',n:'Recolhedor sem fixação aparente',d:'Persiana de enrolar (Linha Gold). Polia Ø120 com adaptador na ponta do eixo MN-015 e mancal na outra ponta; a cinta (5 m) desce pelo fundo da caixa até o recolhedor embutido na parede, com espelho de acabamento. Carga até 13 kg.',q:'1 conjunto',m:''},
   {c:'NYL-369',n:'Guia da persiana',d:'Persiana de enrolar (Linha Gold). Nylon no canal externo do marco lateral MN-003, por onde descem as lâminas.',q:'',m:''},
   {c:'ROL-413',n:'Roldana dupla com rolamento e regulagem',d:'Linha Gold. Nylon e zamak preto. Vai na travessa inferior LG-006/LG-007, nas duas pontas da folha. Carga máxima 80 kg por folha.',q:'',m:'2 por folha'},
   {c:'NYL-395',n:'Vedação inferior',d:'Linha Gold. Nylon preto. Vai no marco inferior, no encontro das folhas.',q:'',m:''},
@@ -1071,13 +1071,38 @@ function build(){
     prof(rg,'MN-015',LW-.07,Z,Y,neg(X),0,0,0,'persiana','MN-015',M.al,true);
     const rm=new THREE.Mesh(new THREE.CylinderGeometry(1,1,LW-.09,40,1,true),new THREE.MeshStandardMaterial({color:0x6d7479,metalness:.35,roughness:.55,side:THREE.DoubleSide}));
     rm.rotation.z=Math.PI/2;rm.userData={part:'persiana'};rg.add(rm);
-    [-1,1].forEach((sx,i)=>{RK=sx<0?'P-rec-L':'P-rec-R';cb(group,'REC-013',.03,.15,.15,sx*(LW/2-.02),top-.119,ze+.095,i===0);});
+    /* Recolhedor REC-013 (sistema sem fixação aparente): polia Ø120 com adaptador numa ponta do eixo, mancal na outra,
+       cinta descendo pelo fundo da caixa até a caixa do recolhedor embutida na parede (lado de dentro) */
+    let POL=null;{const hl=S.comp==='REC-013'&&S.mode==='exp',W_=cmat('nyl',hl,true),ST=cmat('steel',hl),CT=cmat('rub',hl);
+      const cyl=(r,l,seg)=>{const g=new THREE.CylinderGeometry(r,r,l,seg||32);g.rotateZ(Math.PI/2);return g;};
+      const yr=top-.119,zr=ze+.095,xp=-(LW/2-.035),xm=LW/2-.03;
+      const mk3=(par,geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);par.add(m);return m;};
+      const pg=new THREE.Group();pg.position.set(xp,yr,zr);pg.userData={comp:'REC-013',lbl:true};
+      POL=new THREE.Group();pg.add(POL);
+      mk3(POL,cyl(.058,.022),W_,0,0,0);[-1,1].forEach(k=>mk3(POL,cyl(.062,.003),W_,k*.012,0,0));
+      for(let a=0;a<6;a++){const b=mk3(POL,new THREE.BoxGeometry(.024,.006,.1),W_,0,0,0);b.rotation.x=a*Math.PI/3;}
+      mk3(POL,cyl(.022,.05,8),W_,.035,0,0);mk3(POL,cyl(.006,.03),ST,-.02,0,0);
+      RK='P-rec-L';group.add(pg);reg(pg);compObjs.push(pg);if(S.mode==='test')pg.visible=false;
+      const mg=new THREE.Group();mg.position.set(xm,yr,zr);mg.userData={comp:'REC-013',lbl:false};
+      mk3(mg,cyl(.021,.045,8),W_,-.02,0,0);mk3(mg,cyl(.03,.012),W_,.008,0,0);mk3(mg,cyl(.008,.03),ST,.025,0,0);
+      RK='P-rec-R';group.add(mg);reg(mg);compObjs.push(mg);if(S.mode==='test')mg.visible=false;
+      /* cinta + caixa do recolhedor na parede */
+      const rgp=new THREE.Group();rgp.userData={comp:'REC-013',lbl:false};
+      const zc=zr+.058,yb=H/2-.01,xr=-(W/2+.075),yrc=-H/2+1.0,zw=.11;
+      const seg=(a,b)=>{const d=b.clone().sub(a),L=d.length(),m=new THREE.Mesh(new THREE.BoxGeometry(.02,L,.0012),CT);m.position.copy(a).add(b).multiplyScalar(.5);
+        m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());rgp.add(m);};
+      const P1=new THREE.Vector3(xp,yr,zc),P2=new THREE.Vector3(xp,yb,zc),P3=new THREE.Vector3(xp,yb-.03,zw),P4=new THREE.Vector3(xr,yrc+.11,zw);
+      seg(P1,P2);seg(P2,P3);seg(P3,P4);
+      mk3(rgp,new THREE.BoxGeometry(.075,.24,.006),W_,xr,yrc,zw+.003);
+      mk3(rgp,new THREE.BoxGeometry(.06,.21,.055),W_,xr,yrc,zw-.028);
+      mk3(rgp,new THREE.BoxGeometry(.024,.004,.008),CT,xr,yrc+.1,zw+.006);
+      RK='P-rec-L';group.add(rgp);reg(rgp);compObjs.push(rgp);if(S.mode==='test')rgp.visible=false;}
     const cg=new THREE.Group(),Hc=H,pitch=.045,slats=[],N=Math.ceil(Hc/pitch),NE=N+7;RK='P-lam';
     for(let i=0;i<NE;i++){const pv=new THREE.Group();cg.add(pv);prof(pv,'LAM-45',LW-.016,Z,Y,neg(X),0,0,0,'persiana','LAM-45',M.al,i===NE-1);pv.position.y=-PH('LAM-45')/2-i*pitch;slats.push(pv);}
     rm.visible=false;
     cg.position.set(0,H/2,P.cz);group.add(cg);
     [-1,1].forEach((sx,i)=>{RK=sx<0?'F-left':'F-right';cb(group,'NYL-369',.008,H-.02,.02,sx*(LW/2-.004),0,P.cz,i===0);});
-    SASH.push({id:'P',g:cg,roll:true,fixed:false,travel:0,dir:1,n:'Persiana',x0:0,z:P.cz,slats,rm,pitch,Hc,N,C:new THREE.Vector2(BX-.119,ze+.095-P.cz),sh:PH('LAM-45')});
+    SASH.push({id:'P',pol:POL,oct:rg.children[0],g:cg,roll:true,fixed:false,travel:0,dir:1,n:'Persiana',x0:0,z:P.cz,slats,rm,pitch,Hc,N,C:new THREE.Vector2(BX-.119,ze+.095-P.cz),sh:PH('LAM-45')});
   }
   RK=null;
   CUR_P=desmPreset();applyEx();  CUR_P=desmPreset();applyEx();
@@ -1951,7 +1976,8 @@ function rollPlace(s,o){const N=s.N,nv=Math.max(1,Math.round(N*(1-o))),k=s.slats
   const th=L=>(-r0+Math.sqrt(r0*r0+2*a*L))/a,T=th(k*s.pitch);
   s.slats.forEach((pv,i)=>{if(i>=k){pv.position.set(0,-s.sh/2-(i-k)*s.pitch,0);pv.rotation.x=0;return;}
     const sc=(i+.5)*s.pitch,al=-Math.PI/2+(T-th(sc)),r=r0+a*th(sc)+t*.5;
-    pv.position.set(0,s.C.x+r*Math.cos(al),s.C.y+r*Math.sin(al));pv.rotation.x=al+Math.PI/2;});}
+    pv.position.set(0,s.C.x+r*Math.cos(al),s.C.y+r*Math.sin(al));pv.rotation.x=al+Math.PI/2;});
+  if(s.pol)s.pol.rotation.x=T;if(s.oct)s.oct.rotation.x=T;}
 const fmtT=ms=>{const t=Math.round(ms/1000);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
 const starsHTML=(n,m)=>Array.from({length:m||3},(_,i)=>i<n?'<span>★</span>':'<span><i>★</i></span>').join('');
 function better(a,b){if(!b)return true;return a.stars>b.stars||(a.stars===b.stars&&(a.pct>b.pct||(a.pct===b.pct&&a.ms<b.ms)));}
