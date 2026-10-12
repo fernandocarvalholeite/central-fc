@@ -1870,6 +1870,7 @@ cv.addEventListener('pointermove',ev=>{
   const sp=selPart();
   if(sp&&sp.z.length){if(ev.pointerType!=='touch'){const on=tipAt(ev.clientX,ev.clientY);cv.style.cursor=on?'help':'grab';}return;}
   if(ev.pointerType==='touch')return;
+  if(DESM||EXE>.02){if(isOpen())closeAll();cv.style.cursor='grab';return;}
   if(S.lock||S.us||S.cut){cv.style.cursor='grab';return;}
   const r=region(ev);
   cv.style.cursor=(isSash(r)||(r==='gap'&&isOpen()))?'pointer':'grab';
@@ -1889,7 +1890,7 @@ cv.addEventListener('pointerup',ev=>{
   if(S.mode!=='exp'||ev.pointerType!=='touch'||!downAt)return;
   if(Math.hypot(ev.clientX-downAt[0],ev.clientY-downAt[1])>8)return;
   const sp=selPart();if(sp&&sp.z.length){tipAt(ev.clientX,ev.clientY);return;}
-  if(S.lock)return;
+  if(S.lock||DESM||EXE>.02)return;
   const k=region(ev);
   if(k==='gap'){stopAll();return;}
   if(!isSash(k))return;
