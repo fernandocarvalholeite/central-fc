@@ -281,6 +281,7 @@ details.card:not([open]){gap:0}
         <button id="v-side" aria-pressed="false">Lateral</button>
         <label class="lockbtn" for="in-lock"><input id="in-lock" type="checkbox"> Travar folhas</label>
         <label class="lockbtn" for="in-hots"><input id="in-hots" type="checkbox" checked> Junções</label>
+        <button id="v-pers" class="desm" type="button" hidden title="Aproxima a câmera da caixa da persiana">Ver a persiana</button>
         <button id="v-desm" class="desm" aria-pressed="false" title="Separa as peças como um quebra-cabeça; clique de novo para montar">Desmontar</button>
       </div>
       <div class="hint" id="hint">Passe o mouse numa folha para abrir · entre no vão para fechar · arraste para girar</div>
@@ -1115,11 +1116,11 @@ function desmPreset(){
   const V=(x,y,z)=>new THREE.Vector3(x,y,z),F=.16,P=.07,off={},grp={};
   const dir=k=>{const s=k.split('-').pop();
     if(k.startsWith('F-cf-'))return V(k.endsWith('L')?.08:-.08,0,.05);
-    if(k.startsWith('P-')){const D=V(0,.30,-.40);return s==='top'?D.add(V(0,.40,0)):s==='front'?D.add(V(0,.20,-.30)):s==='back'?D.add(V(0,.20,.30)):s==='base'?D.add(V(0,-.12,0)):s==='eixo'?D:s==='L'?D.add(V(-.14,0,0)):s==='R'?D.add(V(.14,0,0)):null;}
+    if(k.startsWith('P-')){const D=V(0,.40,-.85);return s==='top'?D.add(V(0,.55,0)):s==='front'?D.add(V(0,.28,-.45)):s==='back'?D.add(V(0,.28,.45)):s==='base'?D.add(V(0,-.16,-.25)):s==='eixo'?D:s==='L'?D.add(V(-.25,0,0)):s==='R'?D.add(V(.25,0,0)):null;}
     if(/^F|^B\d/.test(k)){return s==='left'?V(-F,0,0):s==='right'?V(F,0,0):s==='top'?V(0,F,0):s==='bot'?V(0,-F,0):s==='mid'?V(0,.05,0):null;}
     return s==='L'?V(-P,0,0):s==='R'?V(P,0,0):s==='top'?V(0,P,0):s==='bot'?V(0,-P,0):s==='mid'?V(0,0,.03):s==='glass'?V(0,0,.09):null;};
   EX.forEach(x=>{if(!(x.k in off))off[x.k]=dir(x.k);});
-  SASH.forEach(s=>{grp[s.id]=s.roll?V(0,.30,-.40):V(0,0,(s.z<0?-1:1)*(.22+Math.abs(s.z)*3));});
+  SASH.forEach(s=>{grp[s.id]=s.roll?V(0,.40,-.85):V(0,0,(s.z<0?-1:1)*(.22+Math.abs(s.z)*3));});
   return {off,grp};
 }
 function applyEx(){
@@ -1184,7 +1185,7 @@ function updateFree(){
 
 /* Vistas */
 const VIEWS={persp:[.52,.2,.83],front:[0,0,1],side:[.99,.05,.09]};
-function ctY(){const P=TYPOS[S.typo].persiana;return P?(P.box+(DESM?.75:0))/2:0;}
+function ctY(){const P=TYPOS[S.typo].persiana;return P?(P.box+(DESM?.95:0))/2:0;}
 function fitDist(){
   const W=S.w/1000,H=S.h/1000+2*ctY(),t=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
   return Math.max((H*1.55/2)/t,(W*1.45/2)/(t*Math.max(camera.aspect,.3)))+.1;
@@ -1201,6 +1202,9 @@ function setView(v){
 document.getElementById('v-desm').addEventListener('click',e=>{DESM=!DESM;const b=e.currentTarget;b.setAttribute('aria-pressed',DESM);b.textContent=DESM?'Montar':'Desmontar';
   if(DESM){if(S.cut)setCut(null);resetOpen();CUR_P=desmPreset();}if(TYPOS[S.typo].persiana){CT.set(0,ctY(),0);camTarget=viewPos(curView);}trk('desmontar',{t:S.typo,on:DESM});});
 controls.addEventListener('start',()=>camTarget=null);
+document.getElementById('v-pers').addEventListener('click',()=>{const TY=TYPOS[S.typo],P=TY.persiana;if(!P)return;
+  const ex=DESM||TESTD(),H=S.h/1000,W=S.w/1000,T=new THREE.Vector3(0,H/2+P.box/2+(ex?.5:0),P.ze+.095+(ex?-.85:0));
+  if(S.cut)setCut(null);CT.copy(T);camTarget=T.clone().add(new THREE.Vector3(ex?.45:.8,ex?.6:.35,-1).normalize().multiplyScalar(ex?Math.max(2.5,W*1.7):Math.max(1.2,W*.85)));trk('ver_persiana',{t:S.typo});});
 
 /* Lista de peças (Explorar) */
 const pl=document.getElementById('parts');
@@ -1739,7 +1743,7 @@ function applyTypo(){
 }
 function setTypo(t){
   trk('tipologia',{t});
-  S.typo=t;S.sel=null;S.focus=null;S.us=null;S.usFocus=false;usPinned=null;S.comp=null;compPinned=null;S.cut=null;S.open={};
+  document.getElementById('v-pers').hidden=!TYPOS[t].persiana;S.typo=t;S.sel=null;S.focus=null;S.us=null;S.usFocus=false;usPinned=null;S.comp=null;compPinned=null;S.cut=null;S.open={};
   Object.keys(T).forEach(k=>delete T[k]);testReset();curProf=null;
   const TY=TYPOS[t],dv=TY.def||[1500,1000];S.w=dv[0];S.h=dv[1];document.getElementById('in-w').value=S.w;document.getElementById('in-h').value=S.h;
   applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();renderComp();renderCards();score();syncCutUI();syncPanel();renderSwap();
