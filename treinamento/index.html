@@ -2318,10 +2318,14 @@ function armPlace(s,o){if(!s.arms)return;const ex=EXE>.02;s.g.updateMatrixWorld(
   const link=(m,a,b)=>{const d=b.clone().sub(a),L=Math.max(.001,d.length());m.position.copy(a).add(b).multiplyScalar(.5);m.scale.set(1,L,1);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());};
   s.arms.forEach(A=>{[A.rail,A.shoe,A.L1,A.L2,...A.pins].forEach(m=>m.visible=!ex);if(ex)return;
     const lx=A.sx*(s.xo+s.gap/2),k=A.bla;
-    const shoe=new THREE.Vector3(A.ax,A.top-k*(.06+.3*o),A.zf),piv=new THREE.Vector3(A.ax,A.top-k*.98,A.zf);
-    const s1=sp(lx,-.02-k*.98),s2=sp(lx,-.02-k*.5);
-    A.shoe.position.copy(shoe);link(A.L1,shoe,s2);link(A.L2,piv,s1);
-    [shoe,piv,s1,s2].forEach((p,i)=>A.pins[i].position.copy(p));});}
+    /* braço de fricção (catálogo): haste longa do pivô alto do trilho até a folha; haste curta da sapata (desliza no trilho) até o meio da haste longa */
+    const piv=new THREE.Vector3(A.ax,A.top-k*.04,A.zf);
+    const tip=sp(lx,-.02-k*.62);
+    const mid=piv.clone().lerp(tip,.5);
+    const shoe=new THREE.Vector3(A.ax,A.top-k*(.08+.55*Math.max(0,1-o*0.0)),A.zf);
+    {const r=mid.distanceTo(piv);const dy=Math.sqrt(Math.max(0,r*r-(mid.x-A.ax)**2-(mid.z-A.zf)**2));shoe.y=Math.min(A.top-k*.1,mid.y-dy);}
+    A.shoe.position.copy(shoe);link(A.L1,piv,tip);link(A.L2,shoe,mid);
+    [piv,tip,shoe,mid].forEach((p,i)=>A.pins[i].position.copy(p));});}
 function rollPlace(s,o){const N=s.N,nv=Math.max(1,Math.round(N*(1-o))),k=s.slats.length-nv,r0=.033,t=.0100,a=t/(2*Math.PI);
   const th=L=>(-r0+Math.sqrt(r0*r0+2*a*L))/a,T=th(k*s.pitch);
   s.slats.forEach((pv,i)=>{if(i>=k){pv.position.set(0,-s.sh/2-(i-k)*s.pitch,0);pv.rotation.x=0;return;}
