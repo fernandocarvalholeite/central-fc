@@ -81,12 +81,12 @@ tbody tr:hover td{background:#f5f8fa}
   <div class="kpi"><b id="k1">–</b><span>alunos ativos</span></div>
   <div class="kpi"><b id="k2">–</b><span>entraram nos últimos 7 dias</span></div>
   <div class="kpi"><b id="k3">–</b><span>horas de estudo no total</span></div>
-  <div class="kpi"><b id="k4">–</b><span>testes concluídos</span></div>
+  <div class="kpi"><b id="k4">–</b><span>desafios concluídos</span></div>
  </section>
  <section class="card">
   <h2>Alunos</h2>
   <div class="tw"><table>
-   <thead><tr><th>Aluno</th><th>Login</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Testes</th><th>Estrelas</th><th>Melhor teste</th></tr></thead>
+   <thead><tr><th>Aluno</th><th>Login</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Desafios</th><th>Estrelas</th><th>Melhor teste</th></tr></thead>
    <tbody id="tb"></tbody>
   </table></div>
  </section>
@@ -99,7 +99,7 @@ tbody tr:hover td{background:#f5f8fa}
     <p class="msg" id="eMsg" role="status"></p>
     <h3>Tipologias estudadas</h3><ul class="chips" id="cTip"></ul>
     <h3>Cortes das junções vistos</h3><p class="note" id="cCor"></p>
-    <h3>Testes dos perfis</h3><p class="note" id="cTes"></p>
+    <h3>Desafios (monte a esquadria)</h3><p class="note" id="cTes"></p>
    </div>
    <div><h3>Últimas atividades</h3><ul class="tl" id="tl"></ul></div>
   </div>
@@ -127,7 +127,8 @@ function resumo(uid){
   const best={};tes.forEach(x=>{const b=best[x.t];if(!b||x.stars>b.stars||(x.stars===b.stars&&x.pct>b.pct))best[x.t]=x;});
   const estrelas=Object.values(best).reduce((a,x)=>a+x.stars,0);
   const melhor=tes.slice().sort((x,y)=>(y.pct-x.pct))[0];
-  return {ev,tip,cor,per,tes,seg,ult,melhor,estrelas,best};
+  const rein=ev.filter(e=>e.tipo==='reinicio').length;
+  return {ev,tip,cor,per,tes,seg,ult,melhor,estrelas,best,rein};
 }
 function render(){
   const sem=Date.now()-7*864e5;let h=0,t=0,ativos7=0;
@@ -146,16 +147,16 @@ function render(){
   document.getElementById('k4').textContent=t;
   if(sel)detalhe();
 }
-const ROT={login:'Entrou no treinamento',tipologia:'Abriu a tipologia',corte:'Viu o corte',perfil:'Estudou o perfil',componente:'Viu o componente',troca:'Trocou perfil',modo:'Mudou o modo',teste:'Concluiu o teste',tempo:null};
+const ROT={reinicio:'Reiniciou o desafio',desmontar:null,login:'Entrou no treinamento',tipologia:'Abriu a tipologia',corte:'Viu o corte',perfil:'Estudou o perfil',componente:'Viu o componente',troca:'Trocou perfil',modo:'Mudou o modo',teste:'Concluiu o desafio',tempo:null};
 function detalhe(){
   const a=ALUNOS.find(x=>x.user_id===sel);if(!a)return;const r=resumo(a.user_id);
   document.getElementById('detCard').hidden=false;document.getElementById('detTit').textContent=(a.nome||a.login)+' · '+a.login;
   document.getElementById('eNome').value=a.nome||'';document.getElementById('bAtivo').textContent=a.ativo?'Bloquear acesso':'Liberar acesso';
   document.getElementById('cTip').innerHTML=Object.entries(TIPOS).map(([k,n])=>`<li class="${r.tip.has(k)?'on':''}">${n}</li>`).join('');
   document.getElementById('cCor').textContent=r.cor.size?[...r.cor].map(x=>{const [t,k]=x.split('·');return (TIPOS[t]||t)+' ('+({esq:'lateral esq.',dir:'lateral dir.',sup:'superior',inf:'inferior',trav:'travessa'}[k]||'encontro')+')';}).join(' · '):'Nenhum corte aberto ainda.';
-  document.getElementById('cTes').textContent=r.tes.length?Object.values(r.best).map(x=>`${TIPOS[x.t]||x.t}: ${'★'.repeat(x.stars)}${'☆'.repeat(3-x.stars)} ${x.pct}%${x.nivel?(x.nivel==='desm'?' (desmontada)':' (montada)'):''}`).join(' · ')+` — ${r.tes.length} teste${r.tes.length===1?'':'s'} feitos`:'Nenhum teste concluído ainda.';
+  document.getElementById('cTes').textContent=r.tes.length?Object.values(r.best).map(x=>`${TIPOS[x.t]||x.t}: ${'★'.repeat(x.stars)}${'☆'.repeat(3-x.stars)} ${x.pct}%${x.nivel?(x.nivel==='desm'?' (desmontada)':' (montada)'):''}`).join(' · ')+` — ${r.tes.length} desafio${r.tes.length===1?'':'s'} feito${r.tes.length===1?'':'s'}, ${r.rein} reinício${r.rein===1?'':'s'}`:'Nenhum desafio concluído ainda.';
   document.getElementById('tl').innerHTML=r.ev.filter(e=>ROT[e.tipo]).slice(0,150).map(e=>{const d=e.detalhe||{};
-    const CK={esq:'lateral esquerda',dir:'lateral direita',sup:'superior',inf:'inferior',trav:'travessa'};const x=e.tipo==='perfil'?d.c:e.tipo==='componente'?d.c:e.tipo==='corte'?(CK[d.k]||'encontro das folhas'):e.tipo==='troca'?`${d.de} → ${d.para}`:e.tipo==='teste'?`${d.pct!=null?d.pct:Math.round(d.tot/((d.tot+d.err)||1)*100)}%${d.stars?' '+'★'.repeat(d.stars):''}`:e.tipo==='modo'?(d.m==='test'?'Teste dos perfis':'Explorar'):'';
+    const CK={esq:'lateral esquerda',dir:'lateral direita',sup:'superior',inf:'inferior',trav:'travessa'};const x=e.tipo==='perfil'?d.c:e.tipo==='componente'?d.c:e.tipo==='corte'?(CK[d.k]||'encontro das folhas'):e.tipo==='troca'?`${d.de} → ${d.para}`:e.tipo==='teste'?`${d.pct!=null?d.pct:Math.round(d.tot/((d.tot+d.err)||1)*100)}%${d.stars?' '+'★'.repeat(d.stars):''}`:e.tipo==='modo'?(d.m==='test'?'Desafio':'Explorar'):'';
     return `<li><time>${fmtD(e.criado_em)}</time><span>${ROT[e.tipo]} ${x?'<strong>'+x+'</strong>':''} <span class="note">${TIPOS[e.tipologia]||''}</span></span></li>`;}).join('')||'<li><span class="note">Sem atividades.</span></li>';
 }
 const msg=(t,ok)=>{const m=document.getElementById('eMsg');m.textContent=t;m.className='msg '+(ok?'ok':'bad');};
