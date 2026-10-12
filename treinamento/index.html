@@ -17,7 +17,7 @@
 .gcard input:focus{outline:2px solid #1f6f9a;outline-offset:1px}
 .gcard button{font:600 15px 'Barlow',sans-serif;padding:11px;border:0;border-radius:8px;background:#1f6f9a;color:#fff;cursor:pointer}
 .gcard button:disabled{opacity:.6}
-.gguia{font:500 14px 'Barlow',sans-serif;color:#1f6f9a;text-align:center}
+.gguia{display:block;padding:10px;border:2px solid #e0972e;border-radius:8px;background:#fdf1df;color:#7a4a08!important;text-decoration:none;font-weight:600!important;font:600 14px 'Barlow',sans-serif;color:#1f6f9a;text-align:center}
 .gmsg{min-height:18px;color:#b4372f!important}
 .ubar{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:6px 16px;background:#1b232a;color:#e9edf0;font:400 13px 'Barlow Semi Condensed',sans-serif}
 .ubar a,.ubar button{color:#fff;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:4px 10px;font:500 13px 'Barlow',sans-serif;cursor:pointer;text-decoration:none}
@@ -37,7 +37,7 @@
   <a class="gguia" href="guia/" target="_blank" rel="noopener">Primeira vez? Veja o guia do aluno →</a>
  </form>
 </div>
-<div class="ubar" id="ubar" hidden><span id="uname"></span><a href="guia/" target="_blank" rel="noopener">Guia</a><a id="upainel" href="painel.html" hidden>Painel da matriz</a><button type="button" onclick="sair()">Sair</button></div>
+<div class="ubar" id="ubar" hidden><span id="uname"></span><a href="guia/" target="_blank" rel="noopener" style="background:#e0972e;border-color:#e0972e;color:#1b1206;font-weight:600">Guia do aluno</a><a id="upainel" href="painel.html" hidden>Painel da matriz</a><button type="button" onclick="sair()">Sair</button></div>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Semi+Condensed:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -67,6 +67,9 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);m
 .eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .fclogo{width:44px;height:44px;border-radius:9px;float:left;margin:2px 12px 0 0;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 @media (max-width:640px){.fclogo{width:36px;height:36px;margin-right:9px}}
+.guiabtn{order:3;align-self:flex-end;display:inline-flex;align-items:center;gap:8px;font:600 14px var(--f-display);padding:9px 14px;border-radius:8px;background:#e0972e;color:#1b1206;text-decoration:none;box-shadow:0 2px 6px rgba(224,151,46,.35)}
+.guiabtn span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#1b1206;color:#ffd99a;font-size:13px;font-weight:700}
+.guiabtn:hover{background:#eba64a}.guiabtn:focus-visible{outline:3px solid #1b1206;outline-offset:2px}
 .hdr-r{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
 .typo{font-size:12px}.typo select{font-family:var(--f-display);font-weight:600;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);min-width:240px}
 .modes{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
@@ -324,6 +327,7 @@ details.card:not([open]){gap:0}
     </div>
     <div class="hdr-r">
     <label class="typo" for="typo">Tipologia<select id="typo"></select></label>
+    <a class="guiabtn" href="https://fernandocarvalholeite.github.io/central-fc/treinamento/guia/" target="_blank" rel="noopener" title="Passo a passo de como usar o treinamento"><span aria-hidden="true">?</span>Guia do aluno</a>
     <div class="modecol">
     <div class="modes" role="group" aria-label="Modo">
       <button id="m-exp" aria-pressed="true">Conhecer a esquadria</button>
