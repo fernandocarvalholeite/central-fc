@@ -1949,7 +1949,11 @@ function applyTypo(){
   ALLP=[...PROFILES,...EXTRA.filter(e=>!codes.includes(e.c)&&!PROFILES.find(q=>q.c===e.c)).map(e=>({...e,h:'Posição na janela a confirmar.'}))];
   PARTS=[{k:'marco',n:'Marco',d:'Quadro fixo preso na alvenaria.',z:[...new Set([fr.t,fr.b,fr.s].concat(TY.contra?[TY.contra]:[],TY.gcontra?['LG-046']:[],CMP(fr.s)?[CMP(fr.s)]:[]))],p:['marco','trilho']},
   ].concat(TY.kind?[]:[{k:'trilho',n:'Trilho inferior',d:`Canais do ${fr.b} onde as folhas correm.`,z:[fr.b],p:['trilho']}]);
-  TY.sashes.forEach(x=>PARTS.push({k:'folha'+x.id,n:x.n,zz:0,d:x.fixed?'Não corre: fica parada no seu canal.':TY.kind==='maxim'?'Abre para fora, girando pelos braços.':TY.kind==='giro'?'Abre para dentro, girando nas dobradiças.':'Corre no seu canal.',z:TY.fz||[...new Set([x.top||'SU-053',x.bot||RB].concat((x.mid!==undefined?x.mid:RM)?[x.mid!==undefined?x.mid:RM]:[],[x.L,x.R]))],p:['folha'+x.id]}));
+  const SPLIT=!TY.fz&&TY.kind!=='maxim'&&TY.kind!=='giro';
+  if(SPLIT)TY.sashes.forEach(x=>{const mid=x.mid!==undefined?x.mid:RM,mv=x.fixed?'fica parada':'corre';
+    PARTS.push({k:'trav'+x.id,n:x.n+' · travessas',zz:0,d:`Travessa superior e inferior${mid?' (e a travessa central)':''} da folha que ${mv} no ${x.z>0?'trilho interno':x.z<0?'trilho externo':'trilho central'}.`,z:[...new Set([x.top||'SU-053',x.bot||RB].concat(mid?[mid]:[]))],p:['folha'+x.id]});
+    PARTS.push({k:'mont'+x.id,n:x.n+' · montante lateral e mão de amigo',zz:0,d:'Perfis verticais da folha: o montante lateral encosta no marco e a mão de amigo encontra a outra folha.',z:[...new Set([x.L,x.R])],p:['folha'+x.id]});});
+  else TY.sashes.forEach(x=>PARTS.push({k:'folha'+x.id,n:x.n,zz:0,d:x.fixed?'Não corre: fica parada no seu canal.':TY.kind==='maxim'?'Abre para fora, girando pelos braços.':TY.kind==='giro'?'Abre para dentro, girando nas dobradiças.':'Corre no seu canal.',z:TY.fz||[...new Set([x.top||'SU-053',x.bot||RB].concat((x.mid!==undefined?x.mid:RM)?[x.mid!==undefined?x.mid:RM]:[],[x.L,x.R]))],p:['folha'+x.id]}));
   (TY.xparts||[]).forEach(x=>PARTS.push(x));
   PARTS.push({k:'baguete',n:'Baguete',d:'Prende o vidro na folha.',z:[TY.bag||'SU-102'],p:['baguete']},{k:'vidro',n:'Vidro',d:'Fixado dentro de cada folha.',z:[],p:['vidro']});
   PARTS.forEach(x=>{if(x.z)x.z=[...new Set(x.z.map(SW))];});
