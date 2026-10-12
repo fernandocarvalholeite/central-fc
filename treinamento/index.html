@@ -516,7 +516,7 @@ Object.assign(PN,{
   'CM-200':{n:'Contramarco 26,5 mm',h:'Contramarco estreito. Vai preso na alvenaria e recebe a janela.'},
   'CM-060':{n:'Contramarco 38 mm',h:'Contramarco médio. Vai preso na alvenaria e recebe a janela.'},
   'CM-174':{n:'Contramarco 60 mm',h:'Contramarco largo, para parede mais grossa.'},
-  'MP-347':{n:'Arremate face interna',h:'Acabamento do lado de dentro do ambiente, encaixado no contramarco.'},
+  'MP-347':{n:'Arremate (alisar) face interna',h:'Alisar cortado em meia-esquadria, do lado de dentro. Encaixa nas presilhas de nylon NYL-190, que são parafusadas no quadro (PAR-936, furo de no máximo 2,5 mm).'},
   'SU-250':{n:'Montante lateral com reforço de aba',h:'Montante lateral com aba de reforço, para folhas maiores.'},
   'MN-003':{n:'Marco lateral da porta com persiana',h:'Fecha os lados da porta e da persiana; o canal externo guia as lâminas.'},
   'LG-047':{n:'Marco inferior 2 trilhos (porta)',h:'Soleira da porta, onde as folhas correm.'},
@@ -561,7 +561,7 @@ const SWP=()=>S.wvOn?WVSW():(S.swaps[S.typo]||(S.swaps[S.typo]={}));
 const WVQ=[
   {k:'C',l:'Perfil contramarco',o:[['CM-200','CM200'],['CM-060','CM060'],['CM-174','CM174']],i:'Muda a largura do contramarco (26,5, 38 ou 60 mm).'},
   {k:'W',l:'Montagem do contramarco',o:[['45','CORTE 45°/45°'],['90','CORTE 90°/90°']],i:'45°: os 4 cantos em meia-esquadria. 90°: laterais inteiras e cantoneira nos cantos.'},
-  {k:'A',l:'Montagem do arremate',o:[['MP-347','MP347 / FACE INTERNA'],['CT-001','CT001 / CENTRO DE PAREDE']],i:'Face interna: o arremate MP-347 aparece do lado de dentro.'},
+  {k:'A',l:'Montagem do arremate',o:[['MP-347','MP347 / FACE INTERNA'],['CT-001','CT001 / CENTRO DE PAREDE']],i:'Face interna: alisar MP-347 em 45° do lado de dentro, preso por presilhas de nylon.'},
   {k:'R',l:'Perfil marco lateral',o:[['SU-003','SU003 / MARCO ÚNICO'],['SU-007+SU-291','SU007 + SU291 / MARCO COMPOSTO']],i:'Composto: marco liso SU-007 com o contrafecho SU-291 encaixado.'},
   {k:'O',l:'Tipo de perfil montante',o:[['comum','FOLHA COMUM'],['larga','FOLHA LARGA']],i:'Comum = perfis de janela. Larga = perfis de porta (travessa inferior SU-225, rodapé alto).'},
   {k:'E',l:'Perfil montante lateral',o:[['SU-039','SU039 / SEM REFORÇO'],['SU-250','SU250 / REFORÇO DE ABA'],['SU-044','SU044 / REFORÇO TUBULAR']],i:'Montante do lado da parede, nas duas folhas.'},
@@ -947,8 +947,13 @@ function build(){
       piece(C,len,vert?Y:X,V3(-sx,-sy,0),V3(sx*ox,sy*oy,0),m45?'mi':'',zc,i===0);});
     if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,cw*.6),cm);b.position.set(sx*(ox-.012),sy*(oy-.012),zc);group.add(b);}));}
     /* arremate: moldura com corte 45° sobre o quadro (SU-001 / SU-003 / SU-002) pelo lado de dentro */
-    if(a.A==='MP-347'){const aw=SHAPES['MP-347'].w/1000,zi=DSL+aw/2+.001,ax=ix-.012,ay=iy-.012;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
-      piece('MP-347',vert?2*ay:2*ax,vert?Y:X,V3(sx,sy,0),V3(sx*ax,sy*ay,0),'m',zi,i===0);});}
+    if(a.A==='MP-347'){const aw=SHAPES['MP-347'].w/1000,zi=DSL+aw/2+.001,ax=W/2-.004,ay=H/2-.004;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
+      piece('MP-347',vert?2*ay:2*ax,vert?Y:X,V3(sx,sy,0),V3(sx*ax,sy*ay,0),'m',zi,i===0);});
+      /* presilhas de nylon NYL-190 presas no quadro com parafuso PAR-936 */
+      const pm=new THREE.MeshStandardMaterial({color:0xf3f3ee,roughness:.6}),nP=L=>Math.max(2,Math.ceil(L/.45)+1);
+      [[1,0],[-1,0],[0,1],[0,-1]].forEach(([sx,sy])=>{const vert=sx!==0,L=vert?H-.12:W-.12,n=nP(L);
+        for(let k=0;k<n;k++){const t=-L/2+k*L/(n-1),b=new THREE.Mesh(new THREE.BoxGeometry(vert?.006:.018,vert?.018:.006,.01),pm);
+          b.position.set(vert?sx*(W/2+.002):t,vert?t:sy*(H/2+.002),DSL-.004);group.add(b);}});}
     RK=RK0;}
   RK='F-left';prof(group,fr.s,H+PBX,LROT?neg(Z):Z,X,LROT?Y:Y,-W/2+FS/2,PBX/2,LZ,'marco',fr.s,M.al,true);
   RK='F-right';prof(group,fr.s,H+PBX,Z,neg(X),Y,W/2-FS/2,PBX/2,LZ,'marco',fr.s,M.al,true);
@@ -1923,7 +1928,7 @@ function wvRender(){const q=document.getElementById('wvQ'),a=S.wv;
 function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
   const lat=a.R==='SU-007+SU-291';
   if(a.C)add(rows,a.C,'Contramarco ('+(a.W==='90'?'90°/90°':'45°/45°')+')','4 pç');
-  if(a.A==='MP-347')add(rows,'MP-347','Arremate face interna','4 pç');else if(a.A)add(rows,'CT-001','Arremate centro de parede','4 pç');
+  if(a.A==='MP-347')add(rows,'MP-347','Arremate (alisar) face interna, corte 45°','4 pç');else if(a.A)add(rows,'CT-001','Arremate centro de parede','4 pç');
   add(rows,'SU-001','Marco superior','1 pç');add(rows,'SU-002','Marco inferior','1 pç');
   if(lat){add(rows,'SU-007','Marco lateral liso','2 pç');add(rows,'SU-291','Contrafecho do marco composto','2 pç');}else add(rows,'SU-003','Marco lateral único','2 pç');
   add(rows,'SU-053','Travessa superior da folha','2 pç');add(rows,a.O==='larga'?'SU-225':'SU-053',a.O==='larga'?'Travessa inferior (rodapé de porta)':'Travessa inferior da folha','2 pç');
@@ -1932,6 +1937,7 @@ function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,
   if(a.V)add(cr,a.V.replace('-',''),a.V==='ROL-439'?'Roldana até 80 kg por folha':'Roldana até 40 kg por folha','4 un');
   if(a.F)add(cr,'',a.F==='chave'?'Fecho concha com chave (código a confirmar)':'Fecho concha com trava (código a confirmar)','1 un');
   if(a.W==='90')add(cr,'','Cantoneira do contramarco 90° (código a confirmar)','4 un');
+  if(a.A==='MP-347'){const nP=L=>Math.max(2,Math.ceil(L/450)+1),n=2*nP(S.h-120)+2*nP(S.w-120);add(cr,'NYL-190','Presilha de nylon do alisar',n+' un');add(cr,'PAR-936','Parafuso de fixação da presilha',n+' un');}
   document.getElementById('wvList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Qtd</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes que mudam com as respostas</td></tr>${cr.join('')}</table>
     <p class="note">Medidas de corte entram quando tivermos a lista do WVetro para conferir. Folgas: ${a.X} mm na largura e ${a.Y} mm na altura.</p>`;}
 function wvNewPed(){const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y};
