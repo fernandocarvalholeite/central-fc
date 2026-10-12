@@ -37,7 +37,13 @@
   <a class="gguia" href="guia/" target="_blank" rel="noopener">Primeira vez? Veja o guia do aluno →</a>
  </form>
 </div>
-<div class="ubar" id="ubar" hidden><span id="uname"></span><a href="guia/" target="_blank" rel="noopener" style="background:#e0972e;border-color:#e0972e;color:#1b1206;font-weight:600">Guia do aluno</a><a id="upainel" href="painel.html" hidden>Painel da matriz</a><button type="button" onclick="sair()">Sair</button></div>
+<div class="gate" id="quemBox" hidden><form class="gcard" id="quemForm" autocomplete="on">
+  <div class="eb">Treinamento FC 3D</div><h1>Quem está estudando agora?</h1>
+  <p>Digite seu nome. Ele aparece no resultado dos desafios, para a FC saber quem fez.</p>
+  <label>Seu nome<input name="quem" id="quemIn" required minlength="2" maxlength="40" autocomplete="name" placeholder="ex.: Maria Souza"></label>
+  <button type="submit">Começar</button>
+ </form></div>
+<div class="ubar" id="ubar" hidden><span id="uname"></span><button type="button" id="quemTag" hidden title="Trocar quem está estudando"></button><a href="guia/" target="_blank" rel="noopener" style="background:#e0972e;border-color:#e0972e;color:#1b1206;font-weight:600">Guia do aluno</a><a id="upainel" href="painel.html" hidden>Painel da matriz</a><button type="button" onclick="sair()">Sair</button></div>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Semi+Condensed:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -129,6 +135,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);m
 .tcard{width:min(460px,100%);max-height:100%;overflow:auto;background:var(--panel);border-radius:14px;padding:22px 22px 18px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:10px;text-align:center}
 .tcard h3{margin:0;font:700 24px/1.15 var(--f-display)}
 .tsub{margin:0;color:var(--muted);font-size:14px}
+.card.cem .tquem{color:#f0ac4c}.tquem{margin:0;font:600 13px var(--f-mono);color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
 .stars{font-size:38px;letter-spacing:6px;color:#d6a21e;line-height:1}.stars i{font-style:normal;color:#d5dce1}
 .stars span{display:inline-block;animation:pop .5s both}.stars span:nth-child(2){animation-delay:.18s}.stars span:nth-child(3){animation-delay:.36s}
 @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
@@ -327,7 +334,7 @@ details.card:not([open]){gap:0}
     </div>
     <div class="hdr-r">
     <label class="typo" for="typo">Tipologia<select id="typo"></select></label>
-    <a class="guiabtn" href="https://fernandocarvalholeite.github.io/central-fc/treinamento/guia/" target="_blank" rel="noopener" title="Passo a passo de como usar o treinamento"><span aria-hidden="true">?</span>Guia do aluno</a>
+    <a class="guiabtn" href="https://fc-consultoria.github.io/treinamento/guia/" target="_blank" rel="noopener" title="Passo a passo de como usar o treinamento"><span aria-hidden="true">?</span>Guia do aluno</a>
     <div class="modecol">
     <div class="modes" role="group" aria-label="Modo">
       <button id="m-exp" aria-pressed="true">Conhecer a esquadria</button>
@@ -350,7 +357,7 @@ details.card:not([open]){gap:0}
       <div class="tpop" id="tpop" hidden role="status"></div>
       <div class="tres" id="tres" hidden role="dialog" aria-modal="false" aria-labelledby="tresT"><div class="tcard">
         <div class="stars" id="tresS" aria-hidden="true"></div>
-        <h3 id="tresT"></h3><p class="tsub" id="tresSub"></p>
+        <p class="tquem" id="tresQ" hidden></p><h3 id="tresT"></h3><p class="tsub" id="tresSub"></p>
         <div class="tnums"><div><b id="tresP"></b><span>de acerto</span></div><div><b id="tresTm"></b><span>tempo</span></div><div><b id="tresR"></b><span>seu recorde</span></div><div><b id="tresRs"></b><span>reinícios</span></div></div>
         <div id="tresW"></div>
         <div class="tacts"><button class="btn" id="tresAgain">Tentar de novo</button><button class="btn pri" id="tresNext">Próxima tipologia</button><button class="btn" id="tresClose">Ver a esquadria</button></div>
@@ -2144,7 +2151,7 @@ function cemCheck(){if(!CMP_)return;const T=CMP_.T,a=S.cm,errs=[],ms=tmStop('cm'
   CMQ.forEach(q=>{const g=a[q.k]===T[q.k],r=document.querySelector(`.cemrow[data-k="${q.k}"]`);r.classList.toggle('ok',g);r.classList.toggle('bad',!g);
     chk(g,`<b>${q.l}:</b> ${CMP_.pick.includes(q.k)?'o pedido pede':'fica no padrão'} → ${q.o.find(o=>o[0]===T[q.k])[1]}`);});
   const pct=Math.round(ok/tot*100),st=to?0:pct===100?3:pct>=85?2:pct>=60?1:0,el=document.getElementById('cmRes');
-  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Esquadria lançada certinha no CEM.':pct>=85?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
+  el.innerHTML=`${window.ALUNO_NOME?`<p class="tquem">Aluno: ${window.ALUNO_NOME.replace(/</g,'')}</p>`:''}<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Esquadria lançada certinha no CEM.':pct>=85?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
   el.hidden=false;document.getElementById('cmLD').hidden=false;trk('cem',{t:'jcr200',ok,tot,pct,stars:st,ms,esgotado:to});}
 document.getElementById('cmCheck').addEventListener('click',cemCheck);
 document.getElementById('cmNew').addEventListener('click',cemNewPed);
@@ -2262,7 +2269,7 @@ function wvCheck(){if(!WVP)return;let ok=0,tot=0;const errs=[],ms=tmStop('wv'),t
   WVQ.forEach(x=>{if((D.cm==='NAO'&&(x.k==='C'||x.k==='W'))||(D.ar==='NAO'&&x.k==='A'))return;tot++;const r=document.querySelector(`.wvrow[data-k="${x.k}"]`),good=String(S.wv[x.k])===String(WVP[x.k]);r.classList.toggle('ok',good);r.classList.toggle('bad',!good);
     if(good)ok++;else errs.push(`<li><b>${x.k} – ${x.l}:</b> ${x.n!=null?`o padrão é ${x.n} mm (só muda com orientação da produção)`:`o pedido pede “${WVTXT[x.k][WVP[x.k]]}” → ${(x.o.find(o=>o[0]===WVP[x.k])||[])[1]}`}</li>`);});
   const pct=Math.round(ok/tot*100),st=to?0:pct===100?3:pct>=80?2:pct>=50?1:0,el=document.getElementById('wvRes');
-  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
+  el.innerHTML=`${window.ALUNO_NOME?`<p class="tquem">Aluno: ${window.ALUNO_NOME.replace(/</g,'')}</p>`:''}<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
   el.hidden=false;document.getElementById('wvLD').hidden=false;trk('wvetro',{t:'jcr200',ok,tot,pct,stars:st,ms,esgotado:to});}
 document.getElementById('wvCheck').addEventListener('click',wvCheck);
 document.getElementById('wvNew').addEventListener('click',wvNewPed);
@@ -2334,6 +2341,7 @@ function finish(){
   setTimeout(()=>{
     document.getElementById('tresS').innerHTML=starsHTML(stars,3);
     document.getElementById('tresT').textContent=to?'Tempo esgotado na '+TYPOS[S.typo].code:(pct>=90?'Parabéns! ':pct>=70?'Muito bem! ':'Boa! ')+'Você montou a '+TYPOS[S.typo].code;
+    document.getElementById('tresQ').textContent=window.ALUNO_NOME?'Aluno: '+window.ALUNO_NOME:'';document.getElementById('tresQ').hidden=!window.ALUNO_NOME;
     document.getElementById('tresSub').textContent=(to?`Você encaixou ${ok} de ${tot} peças no tempo de ${fmtT(LIMS())}. Tente de novo para ganhar estrelas.`:pct>=90?'Montagem de quem conhece a linha.':pct>=70?'Faltou pouco para as 3 estrelas.':'Continue treinando: cada tentativa fica mais fácil.');
     document.getElementById('tresP').textContent=pct+'%';document.getElementById('tresRs').textContent=rs;document.getElementById('tresTm').textContent=fmtT(ms);
     const r=PROG[S.typo];document.getElementById('tresR').textContent=novo?'novo!':(r?r.pct+'% · '+fmtT(r.ms):'—');
@@ -2425,6 +2433,14 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
   if(!p3d.hidden){ctl2.update();r2.render(sc2,cam2);updatePLabels();}})();
 </script>
 
+<script>
+function pedirNome(perfil){const box=document.getElementById('quemBox'),inp=document.getElementById('quemIn'),tag=document.getElementById('quemTag');
+  let last='';try{last=sessionStorage.getItem('treinFC-quem')||'';}catch(e){}
+  const set=n=>{window.ALUNO_NOME=n;try{sessionStorage.setItem('treinFC-quem',n);localStorage.setItem('treinFC-quem-ult',n);}catch(e){}tag.textContent='Estudando: '+n+' · trocar';tag.hidden=false;box.hidden=true;};
+  if(last){set(last);}else{try{inp.value=localStorage.getItem('treinFC-quem-ult')||'';}catch(e){}box.hidden=false;setTimeout(()=>inp.focus(),50);}
+  document.getElementById('quemForm').onsubmit=e=>{e.preventDefault();const n=inp.value.trim().replace(/\s+/g,' ');if(n.length<2)return;set(n);if(window.TRK)TRK('quem',{n});};
+  tag.onclick=()=>{inp.value='';box.hidden=false;inp.focus();};}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="auth.js"></script>
 <script>
@@ -2434,6 +2450,7 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
   const enviar=async()=>{if(!uid||!fila.length)return;const lote=fila.splice(0);const {error}=await sb.from('trein_eventos').insert(lote);if(error)fila.unshift(...lote);};
   window.TRK=(tipo,d)=>{if(!uid)return;d=d||{};
     if(tipo==='perfil'||tipo==='componente'||tipo==='corte'){const k=tipo+'|'+(d.t||'')+'|'+(d.c||d.k||'');if(vistos.has(k))return;vistos.add(k);}
+    if(window.ALUNO_NOME)d=Object.assign({quem:window.ALUNO_NOME},d);
     fila.push({user_id:uid,tipo,tipologia:d.t||null,detalhe:d});ultimo=Date.now();};
   ['pointerdown','keydown','wheel'].forEach(ev=>addEventListener(ev,()=>{ultimo=Date.now();},{passive:true}));
   setInterval(()=>{if(uid&&document.visibilityState==='visible'&&Date.now()-ultimo<180000)fila.push({user_id:uid,tipo:'tempo',tipologia:(typeof S!=='undefined'?S.typo:null)||null,detalhe:{s:60}});},60000);
@@ -2443,6 +2460,7 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
     uid=session.user.id;
     document.getElementById('ubar').hidden=false;
     document.getElementById('uname').textContent=(perfil.nome||perfil.login)+(perfil.papel==='admin'?' · matriz':'');
+    if(perfil.papel!=='admin')pedirNome(perfil);
     document.getElementById('upainel').hidden=perfil.papel!=='admin';
     fila.push({user_id:uid,tipo:'login',tipologia:(typeof S!=='undefined'?S.typo:null)||null,detalhe:{}});
     TRK('tipologia',{t:(typeof S!=='undefined'?S.typo:null)||''});
