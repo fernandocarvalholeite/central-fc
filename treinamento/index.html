@@ -215,6 +215,9 @@ input[type=range],input[type=checkbox]{accent-color:var(--accent)} input[type=ra
 .pl{position:absolute;transform:translate(-50%,-130%);font-family:var(--f-mono);font-size:11px;background:#d86f00;color:#fff;padding:1px 5px;border-radius:3px;white-space:nowrap}
 .pl.dim{background:var(--panel);color:#d86f00;border:1px solid #d86f00;transform:translate(-50%,-50%)}
 .p3d-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px 0}.p3d-head .eyebrow{flex:1}
+.p3dsw{display:flex;flex-direction:column;gap:5px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.p3dsw .t{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.p3dsw .o{display:flex;flex-wrap:wrap;gap:5px}.p3dsw button{font:600 12px var(--f-mono);padding:4px 9px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--fg);cursor:pointer}
+.p3dsw button:hover{border-color:var(--accent)}.p3dsw button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}.p3dsw small{font-size:11px;color:var(--muted)}
 .p3d-back{font:inherit;font-size:12px;padding:4px 10px;border:1px solid #c9d3da;border-radius:6px;background:#fff;color:#1d3f57;cursor:pointer}.p3d-back:hover{border-color:#1f6f9a;background:#eef5fa}
 .p3d-head .code{font-size:15px}
 .find{font-family:var(--f-mono);font-size:14px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);width:100%}
@@ -407,7 +410,7 @@ details.card:not([open]){gap:0}
         <div class="p3d-head"><button class="p3d-back" id="p3dBack" type="button" title="Fechar e voltar à esquadria inteira">← Voltar</button><span class="eyebrow">Perfil em 3D</span><span class="code" id="p3dCode"></span></div>
         <input class="find" id="find2" list="plist" placeholder="Digite o código, ex.: 053" aria-label="Buscar perfil pelo código" autocomplete="off">
         <div class="p3d-view" id="p3dView"><div class="angw" id="angw2"></div></div>
-        <div class="p3d-info"><div><strong id="p3dName"></strong><p id="p3dHint"></p></div></div>
+        <div class="p3d-info"><div><strong id="p3dName"></strong><p id="p3dHint"></p><div class="p3dsw" id="p3dSw" hidden></div></div></div>
       </div>
 
       <details class="card" id="c-parts">
@@ -1730,7 +1733,16 @@ function showProfile(c){
   document.getElementById('p3dName').textContent=p.n;document.getElementById('p3dHint').textContent=p.h;
   p3d.style.borderColor=css(zcol(c));
   document.querySelectorAll('.find').forEach(i=>{if(document.activeElement!==i)i.value=c;});
+  p3dSwap(c);
 }
+/* Trocar o perfil direto pelo painel Perfil em 3D (mesmas opções do painel Trocar perfis) */
+function p3dSwap(c){const el=document.getElementById('p3dSw');if(!el)return;const b=BASEOF(c),alts=ALT[b];
+  if(S.mode!=='exp'||S.wvOn||!alts||!ORIGC.includes(b)||String(c).includes('+')){el.hidden=true;el.innerHTML='';return;}
+  const cur=SWP()[b]||b,opts=[b,...alts];
+  el.innerHTML=`<span class="t">Trocar este perfil</span><div class="o">${opts.map(o=>`<button type="button" data-o="${o}" aria-pressed="${o===cur}">${o.replace('+',' + ')}</button>`).join('')}</div><small>${cur===b?'Original da tipologia: '+b:'Trocado: '+b+' → '+cur.replace('+',' + ')}</small>`;
+  el.hidden=false;
+  el.querySelectorAll('button').forEach(x=>x.addEventListener('click',()=>{const o=x.dataset.o,sw=SWP();if(o===b)delete sw[b];else{sw[b]=o;trk('troca',{t:S.typo,de:b,para:o});}
+    const keep=S.find?'busca':S.sel;refreshSwap(o.split('+')[0]);if(o.includes('+')){setCut('esq');demoCF();}}));}
 /* Perfil usinado: trecho do perfil com as usinagens, como sai da prensa */
 const P_SPEC0={
   '1002':{c:'SU-039',L:.1,ry:Math.PI-.75,m:[['disc','x',-1,0,.0316,.0025,0],['ghost','x',-1,0,.049,.0025,0]],
