@@ -90,10 +90,10 @@ tbody tr:hover td{background:#f5f8fa}
  </section>
  <section class="card">
   <h2>Alunos</h2>
-  <p class="ihint">Clique no nome ou no login para editar · Enter salva · Esc desfaz. O login novo vale no próximo acesso do aluno (a senha continua a mesma). Maiúsculas aparecem no painel, mas o aluno pode digitar o login com ou sem maiúsculas.</p>
+  <p class="ihint">Clique no nome, no login ou em nova senha para editar · Enter salva · Esc desfaz. O login novo vale no próximo acesso do aluno (a senha continua a mesma). Maiúsculas aparecem no painel, mas o aluno pode digitar o login com ou sem maiúsculas.</p>
   <p class="msg bad" id="tbMsg" hidden></p>
   <div class="tw"><table>
-   <thead><tr><th>Aluno</th><th>Login</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Desafios</th><th>Estrelas</th><th>Melhor teste</th></tr></thead>
+   <thead><tr><th>Aluno</th><th>Login</th><th>Senha</th><th>Situação</th><th>Último acesso</th><th>Tempo</th><th>Tipologias vistas</th><th>Cortes</th><th>Perfis</th><th>Desafios</th><th>Estrelas</th><th>Melhor teste</th></tr></thead>
    <tbody id="tb"></tbody>
   </table></div>
  </section>
@@ -143,7 +143,7 @@ function render(){
   ALUNOS.forEach(a=>{const r=resumo(a.user_id);h+=r.seg;t+=r.tes.length;if(r.ult&&new Date(r.ult)>sem)ativos7++;
     const tr=document.createElement('tr');if(sel===a.user_id)tr.className='sel';
     const esc=v=>String(v||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-    tr.innerHTML=`<td><input class="ied" data-e="nome" value="${esc(a.nome)}" placeholder="sem nome – digite" aria-label="Nome do ${esc(a.login)}" title="Clique para editar o nome; Enter salva"></td><td><input class="ied lg" data-e="login" value="${esc(a.login)}" aria-label="Login do ${esc(a.login)}" title="Clique para editar o login; Enter salva"></td>
+    tr.innerHTML=`<td><input class="ied" data-e="nome" value="${esc(a.nome)}" placeholder="sem nome – digite" aria-label="Nome do ${esc(a.login)}" title="Clique para editar o nome; Enter salva"></td><td><input class="ied lg" data-e="login" value="${esc(a.login)}" aria-label="Login do ${esc(a.login)}" title="Clique para editar o login; Enter salva"></td><td><input class="ied lg" data-e="senha" value="" placeholder="nova senha" autocomplete="new-password" aria-label="Nova senha do ${esc(a.login)}" title="Digite a nova senha (mín. 6) e aperte Enter"></td>
       <td><span class="tag ${a.ativo?'':'off'}">${a.ativo?'ativo':'bloqueado'}</span></td><td class="n">${fmtD(r.ult)}</td><td class="n">${fmtH(r.seg)}</td>
       <td><div style="display:flex;gap:8px;align-items:center"><div class="bar" style="flex:1"><i style="width:${Math.round(r.tip.size/NT*100)}%"></i></div><span class="n">${r.tip.size}/${NT}</span></div></td>
       <td class="n">${r.cor.size}</td><td class="n">${r.per.size}</td><td class="n">${r.tes.length}</td><td class="n" style="color:#b8860b">★ ${r.estrelas}/${NT*3}</td>
@@ -152,6 +152,10 @@ function render(){
     tr.querySelectorAll('.ied').forEach(inp=>{const k=inp.dataset.e,orig=inp.value;
       inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=orig;inp.blur();}});
       inp.addEventListener('blur',async()=>{const v=inp.value.trim();if(v===orig)return;inp.disabled=true;let error;
+        if(k==='senha'){if(!v){inp.disabled=false;return;}if(v.length<6){inp.disabled=false;inp.classList.add('bad');alert0('A senha precisa ter pelo menos 6 caracteres.');return;}
+          ({error}=await sb.rpc('trein_set_senha',{alvo:a.user_id,nova:v}));inp.disabled=false;inp.classList.toggle('ok',!error);inp.classList.toggle('bad',!!error);
+          if(error){alert0(error.message);}else{inp.title='Senha trocada para: '+v+'. Passe para o aluno.';const m=document.getElementById('tbMsg');m.textContent='Senha de '+a.login+' trocada para: '+v+' (anote e passe para o aluno).';m.style.color='var(--ok)';m.hidden=false;setTimeout(()=>{m.hidden=true;m.style.color='';},12000);}
+          return;}
         if(k==='nome')({error}=await sb.from('trein_alunos').update({nome:v||null}).eq('user_id',a.user_id));
         else{if(!v){inp.value=orig;inp.disabled=false;return;}({error}=await sb.rpc('trein_set_login',{alvo:a.user_id,novo:v}));}
         inp.disabled=false;inp.classList.toggle('ok',!error);inp.classList.toggle('bad',!!error);
