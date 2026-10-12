@@ -930,9 +930,18 @@ function build(){
     RK=kF+'-bot';cb(group,'GUA-053',UW-2*MB,.0047,.0078,cx,cy-UH/2+MB+.0024,.004,false);
     [-1,1].forEach(sx=>{RK=sx<0?kF+'-left':kF+'-right';cb(group,'GUA-053',.0047,UH-2*MB,.0078,cx+sx*(UW/2-MB-.0024),cy,.004,false);});
     const fh=2*yo,bl=fh<=.5?.25:fh<=.76?.5:fh<=.9?.75:.81;
-    [-1,1].forEach((sx,i)=>{RK=sx<0?P+'-L':P+'-R';cb(g,'BRA-702',.006,Math.min(bl,fh*.8),.012,sx*(xo+GAP/2),-Math.min(bl,fh*.8)/2-.02,.004,first&&i===0);});
+    const bla=Math.min(bl,fh*.8),arms=[];
+    [-1,1].forEach((sx,i)=>{RK=sx<0?P+'-L':P+'-R';const ph=cb(g,'BRA-702',.006,bla,.012,sx*(xo+GAP/2),-bla/2-.02,.004,first&&i===0);ph.visible=false;
+      /* braço articulado: trilho (caixa 17 mm) no marco, sapata deslizante e duas hastes ligadas à folha */
+      const hl=S.comp==='BRA-702'&&S.mode==='exp',mA=cmat('alu',hl),mS=cmat('steel',hl),mN=cmat('nyl',hl);
+      const ax=cx+sx*(xo+GAP/2),top=cy+yo-.02,mk=(geo,m)=>{const o=new THREE.Mesh(geo,m);o.userData={comp:'BRA-702',lbl:false};group.add(o);compObjs.push(o);return o;};
+      const rail=mk(new THREE.BoxGeometry(.016,bla,.006),mA);rail.position.set(ax,top-bla/2,fz+.004);
+      const shoe=mk(new THREE.BoxGeometry(.018,.03,.01),mN);
+      const L1=mk(new THREE.BoxGeometry(.012,1,.003),mA),L2=mk(new THREE.BoxGeometry(.012,1,.003),mA);
+      const pins=[0,1,2,3].map(()=>{const c=mk(new THREE.CylinderGeometry(.005,.005,.014,14),mS);c.rotation.z=Math.PI/2;return c;});
+      arms.push({sx,ax,top,bla,rail,shoe,L1,L2,pins,zf:fz+.008});});
     g.position.set(cx,cy+yo,fz);group.add(g);
-    SASH.push({id:P,g,i:SASH.length,x0:cx,y0:cy+yo,z:fz,dir:1,fixed:false,travel:0,hinge:true,n:nm,bl});
+    SASH.push({id:P,g,i:SASH.length,x0:cx,y0:cy+yo,z:fz,dir:1,fixed:false,travel:0,hinge:true,n:nm,bl,arms,xo,gap:GAP});
   }
   /* Montagem conforme o catálogo Suprema (cortes da tipologia). +Z = lado interno */
   const TY=TYPOS[S.typo],fr=TY.fr,NS=TY.sashes.length;
@@ -1303,7 +1312,7 @@ function updateLabels(){
 function placeSashes(){
   const g=CUR_P&&CUR_P.grp||{},td=TESTD();
   const TYs=TYPOS[S.typo],mv=SASH.filter(x=>!x.fixed),maxT=Math.max(0,...mv.map(x=>x.travel));
-  SASH.forEach(s=>{if(s.roll){rollPlace(s,(S.open[s.id]||0)/100);return;}if(s.swing){s.g.position.set(s.x0,0,s.z);s.g.rotation.y=-1.35*(S.open[s.id]||0)/100;return;}if(s.hinge){s.g.position.set(s.x0,s.y0,s.z+(-.03*(S.open[s.id]||0)/100));s.g.rotation.x=.55*(S.open[s.id]||0)/100;return;}let d;if(TYs.seq&&!s.fixed){const tot=(S.open.S||0)/100*maxT;d=Math.min(s.travel,Math.max(0,tot-(maxT-s.travel)));}else d=s.travel*(S.open[s.id]||0)/100;s.g.position.set(s.x0+s.dir*d,s.y0||0,s.z);if(g[s.id])s.g.position.addScaledVector(g[s.id],td?(SF[s.id]!=null?SF[s.id]:1):EXE);});
+  SASH.forEach(s=>{if(s.roll){rollPlace(s,(S.open[s.id]||0)/100);return;}if(s.swing){s.g.position.set(s.x0,0,s.z);s.g.rotation.y=-1.35*(S.open[s.id]||0)/100;return;}if(s.hinge){s.g.position.set(s.x0,s.y0,s.z+(-.03*(S.open[s.id]||0)/100));s.g.rotation.x=.55*(S.open[s.id]||0)/100;armPlace(s,(S.open[s.id]||0)/100);return;}let d;if(TYs.seq&&!s.fixed){const tot=(S.open.S||0)/100*maxT;d=Math.min(s.travel,Math.max(0,tot-(maxT-s.travel)));}else d=s.travel*(S.open[s.id]||0)/100;s.g.position.set(s.x0+s.dir*d,s.y0||0,s.z);if(g[s.id])s.g.position.addScaledVector(g[s.id],td?(SF[s.id]!=null?SF[s.id]:1):EXE);});
 }
 /* Desmontar: separa as peças como um quebra-cabeça (perfis do marco para fora, peças da folha afastadas, folhas puxadas para frente/trás) */
 let DESM=false;
@@ -2298,6 +2307,16 @@ const ORDEM=['jcr200','jcr200a','jcr300','jcr205','pcr200','pvz300','pgr100','ma
 let PROG={},RST={};try{PROG=JSON.parse(localStorage.getItem('treinFC-prog')||'{}');}catch(e){}
 const LIMS=()=>Math.max(180,30*PROFILES.length)*1000;
 /* persiana: lâminas visíveis penduradas; as demais enroladas em espiral no eixo octogonal */
+/* braço da maxim-ar: hastes recalculadas a cada abertura (sapata desliza no trilho) */
+function armPlace(s,o){if(!s.arms)return;const ex=EXE>.02;s.g.updateMatrixWorld(true);group.updateMatrixWorld(true);
+  const sp=(lx,ly)=>{const v=new THREE.Vector3(lx,ly,.006);s.g.localToWorld(v);group.worldToLocal(v);return v;};
+  const link=(m,a,b)=>{const d=b.clone().sub(a),L=Math.max(.001,d.length());m.position.copy(a).add(b).multiplyScalar(.5);m.scale.set(1,L,1);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());};
+  s.arms.forEach(A=>{[A.rail,A.shoe,A.L1,A.L2,...A.pins].forEach(m=>m.visible=!ex);if(ex)return;
+    const lx=A.sx*(s.xo+s.gap/2),k=A.bla;
+    const shoe=new THREE.Vector3(A.ax,A.top-k*(.06+.3*o),A.zf),piv=new THREE.Vector3(A.ax,A.top-k*.98,A.zf);
+    const s1=sp(lx,-.02-k*.98),s2=sp(lx,-.02-k*.5);
+    A.shoe.position.copy(shoe);link(A.L1,shoe,s2);link(A.L2,piv,s1);
+    [shoe,piv,s1,s2].forEach((p,i)=>A.pins[i].position.copy(p));});}
 function rollPlace(s,o){const N=s.N,nv=Math.max(1,Math.round(N*(1-o))),k=s.slats.length-nv,r0=.033,t=.0100,a=t/(2*Math.PI);
   const th=L=>(-r0+Math.sqrt(r0*r0+2*a*L))/a,T=th(k*s.pitch);
   s.slats.forEach((pv,i)=>{if(i>=k){pv.position.set(0,-s.sh/2-(i-k)*s.pitch,0);pv.rotation.x=0;return;}
