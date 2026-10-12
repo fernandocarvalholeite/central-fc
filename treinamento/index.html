@@ -133,6 +133,15 @@ aside{display:flex;flex-direction:column;gap:14px;min-width:0}
 .wvrow input{text-align:right}.wvsee{display:inline-block;margin-top:4px;font:inherit;font-size:11px;padding:2px 8px;border:1px solid #c9d3da;border-radius:10px;background:#fff;color:#1d3f57;cursor:pointer;text-transform:none}.wvsee:hover{border-color:#1f6f9a;background:#eef5fa}
 #c-wv .p3d{margin:2px 0 6px}.wvrow .warn{grid-column:2/4;font-size:11px;color:#8a5a00;background:#fff6dd;border-radius:5px;padding:4px 6px}
 .wvped{background:#eef5fa;border:1px solid #c7dbe8;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.45}.wvped ul{margin:6px 0 0;padding-left:18px}
+.wvsteps{display:flex;gap:4px}.wvsteps button{flex:1;font:inherit;font-size:12.5px;font-weight:600;padding:7px 8px;border:1px solid #c9d3da;border-radius:6px;background:#fff;color:#1d3f57;cursor:pointer}
+.wvsteps button[aria-pressed=true]{background:#1f5f8b;border-color:#1f5f8b;color:#fff}
+.wvdados{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;border:1px solid #d5dde3;border-radius:6px;padding:10px;background:#fff}
+.wvdados .hd{grid-column:1/3;font-size:12px;color:#33414b;background:#f2f4f6;border:1px solid #e1e6ea;border-radius:4px;padding:6px 8px}
+.wvdados label{display:flex;flex-direction:column;gap:3px;font-size:10.5px;text-transform:uppercase;color:#3a4650;min-width:0}.wvdados label.w2{grid-column:1/3}
+.wvdados label b{color:#c0392b;font-weight:600}
+.wvdados input,.wvdados select,.wvdados textarea{font:inherit;font-size:13px;text-transform:none;padding:6px 8px;border:1px solid #cfd6dc;border-radius:3px;background:#fff;color:#1b232a;min-width:0;width:100%}
+.wvdados input.ro,.wvdados textarea{background:#eef0f2}.wvdados .ok input,.wvdados .ok select{border-color:#5cb874;background:#e7f6eb}.wvdados .bad input,.wvdados .bad select{border-color:#d06060;background:#ffe3e3}
+.wvdados .nx{grid-column:1/3;justify-self:end}
 .wvact{display:flex;gap:8px;flex-wrap:wrap}.btn.sec{background:#fff;color:#1d3f57;border:1px solid #c9d3da}
 .wvres{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}.wvres .stars{font-size:26px}.wvres ul{margin:6px 0 0;padding-left:18px}
 .wvlist summary{cursor:pointer;font-weight:600;font-size:13px}.wvlist table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
@@ -343,9 +352,11 @@ details.card:not([open]){gap:0}
       <div class="card" id="c-wv" hidden>
         <h2>Resposta de variáveis</h2>
         <div class="wvped" id="wvPed"></div>
+        <div class="wvsteps" role="tablist"><button type="button" data-s="d" aria-pressed="true">1 · Dados do projeto</button><button type="button" data-s="v" aria-pressed="false">2 · Variáveis</button></div>
+        <div class="wvdados" id="wvD"></div>
         <div class="score"><span>Tempo <b id="wvT">0:00</b> / <b id="wvL">5:00</b></span></div><div class="tbar"><i id="wvBar"></i></div>
-        <p class="note" id="wvNote">Leia o pedido e responda as variáveis como no WVetro. A janela 3D muda junto com cada resposta. No fim, clique em Conferir respostas.</p>
-        <div class="wvq" id="wvQ"></div>
+        <p class="note" id="wvNote" hidden>Leia o pedido e responda as variáveis como no WVetro. A janela 3D muda junto com cada resposta. No fim, clique em Conferir respostas.</p>
+        <div class="wvq" id="wvQ" hidden></div>
         <div class="wvact" id="wvAct"><button class="btn" id="wvCheck" type="button">Conferir respostas</button><button class="btn sec" id="wvNew" type="button">↻ Nova simulação</button></div>
         <div class="wvres" id="wvRes" hidden></div>
         <details class="wvlist" open><summary>Lista gerada (perfis e componentes)</summary><div id="wvList"></div></details>
@@ -972,7 +983,8 @@ function build(){
   /* SU-003: lateral esquerdo girado 180° (abas voltadas para a folha dos dois lados); SU-012/SU-028: espelhado (vedação sempre no lado externo) — conforme cortes do catálogo */
   const LROT=fr.s==='SU-003';
   if(S.wvOn&&S.typo==='jcr200'){/* contramarco e arremate do Desafio WVetro */
-    const a=S.wv,fx=(+a.X||0)/2000,fy=(+a.Y||0)/2000,RK0=RK;RK=null;
+    const a=Object.assign({},S.wv);if(!S.cemOn&&S.wvd){if(S.wvd.cm==='NAO')a.C='';if(S.wvd.ar==='NAO')a.A='';}
+    const fx=(+a.X||0)/2000,fy=(+a.Y||0)/2000,RK0=RK;RK=null;
     const piece=(c,len,dir,out,pos,mode,zpos,lbl,ZX)=>{ZX=ZX||Z;const d=SHAPES[c],k=sc(d);let ymin=1e9;d.s.forEach(o=>o.o.forEach(q=>ymin=Math.min(ymin,q[1]*k)));
       const shapes=d.s.map(o=>{const sh=new THREE.Shape(o.o.map(([px,py])=>new THREE.Vector2(px*k,py*k-ymin)));o.h.forEach(h=>sh.holes.push(new THREE.Path(h.map(([px,py])=>new THREE.Vector2(px*k,py*k-ymin)))));return sh;});
       const g=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:1});g.translate(0,0,-len/2);
@@ -1431,7 +1443,7 @@ document.getElementById('in-hots').addEventListener('change',e=>{S.hots=e.target
 
 /* Modelos 3D dos componentes (formas simplificadas a partir das imagens do catálogo) */
 const CM={};
-function cmat(k,hl,lt){const CC=S.cemOn&&S.cm&&S.cm.CO?S.cm.CO:'';const key=k+(hl?'h':'')+(lt?'l':'')+S.cor+CC;if(CM[key])return CM[key];
+function cmat(k,hl,lt){const CC=S.cemOn?(S.cm&&S.cm.CO||''):S.wvOn&&S.wvd?{BRANCO:'branco',PRETO:'preto'}[S.wvd.ca]||'':'';const key=k+(hl?'h':'')+(lt?'l':'')+S.cor+CC;if(CM[key])return CM[key];
   const base=lt?0xeceef0:CC==='preto'?0x202326:CC==='branco'?0xf1f2f0:CORES[S.cor];
   const c={nyl:[base,.05,.55],alu:[base,.45,.35],zam:[base,.5,.35],brush:[0x1a1b1d,0,1],screw:[0xc9cdd1,.85,.25],rub:[0x141516,0,.9],pink:[0xe36bb3,.05,.5],steel:[0xb9bec3,.85,.3],lat:[0xb5a688,.6,.35]}[k];
   CM[key]=hl&&!['brush','rub','pink','screw','steel'].includes(k)?new THREE.MeshStandardMaterial({color:0xff8a00,emissive:0xb34f00,emissiveIntensity:.7,roughness:.5}):new THREE.MeshStandardMaterial({color:c[0],metalness:c[1],roughness:c[2],emissive:hl?0x8a3a00:0,emissiveIntensity:hl?.4:0});return CM[key];}
@@ -1945,6 +1957,7 @@ function setMode(m){
   if(m!=='test'){document.getElementById('tres').hidden=true;document.getElementById('tpop').hidden=true;thint.hidden=true;}
   if(m==='test'){resetOpen();cv.style.cursor='grab';}
   if(was&&(!wv||cem!==wasC))p3dHomeBack();
+  if(!wv&&was){S.w=1500;S.h=1000;S.cor='branco';S.vidro='incolor';for(const k in CM)delete CM[k];}
   if(!cem&&wasC){S.w=1500;S.h=1000;S.cor='branco';for(const k in CM)delete CM[k];}
   if(cem&&!wasC){for(const k in CM)delete CM[k];cemNewPed();return;}
   build();if(wv&&!cem&&(!was||wasC))wvNewPed();
@@ -2067,7 +2080,43 @@ function cemCheck(){if(!CMP_)return;const T=CMP_.T,a=S.cm,errs=[],ms=tmStop('cm'
 document.getElementById('cmCheck').addEventListener('click',cemCheck);
 document.getElementById('cmNew').addEventListener('click',cemNewPed);
 /* ---- Desafio WVetro: perguntas, lista e pedido do cliente ---- */
-let WVM='livre',WVP=null;
+let WVM='livre',WVP=null,WVSTEP='d';
+/* Etapa 1 do WVetro: Dados do projeto para o orçamento */
+const WVDO={ca:[['BRANCO','BRANCO'],['PRETO','PRETO']],cp:[['ANODIZADO NATURAL','ANODIZADO NATURAL'],['PINTURA BRANCA','PINTURA BRANCA'],['PINTURA PRETO','PINTURA PRETO'],['ANODIZADO BRONZE','ANODIZADO BRONZE']],
+  vd:[['INCOLOR 06MM - TEMPERADO','INCOLOR 06MM - TEMPERADO'],['VERDE 06MM - TEMPERADO','VERDE 06MM - TEMPERADO'],['FUME 06MM - TEMPERADO','FUMÊ 06MM - TEMPERADO']],
+  sn:[['SIM','SIM'],['NAO','NÃO']],tm:[['Externa','Externa'],['Interna','Interna']]};
+const WVCOR={'ANODIZADO NATURAL':'natural','PINTURA BRANCA':'branco','PINTURA PRETO':'preto','ANODIZADO BRONZE':'bronze'},WVVID={'INCOLOR 06MM - TEMPERADO':'incolor','VERDE 06MM - TEMPERADO':'verde','FUME 06MM - TEMPERADO':'fume'};
+function wvdNew(){return {nom:'JANELA DE CORRER 02 FOLHAS | SUPREMA',qtd:'',L:'',H:'',ca:'',cp:'',vd:'',amb:'',tipo:'',dt:'',cm:'',ar:'',ap:'',tm:'',ordem:''};}
+S.wvd=null;
+function wvdApply(){const d=S.wvd;if(!d)return;const L=+d.L,H=+d.H;S.w=L>=500&&L<=3000?L:1500;S.h=H>=500&&H<=2500?H:1000;S.cor=WVCOR[d.cp]||'branco';S.vidro=WVVID[d.vd]||'incolor';for(const k in CM)delete CM[k];}
+function wvStep(st){WVSTEP=st;document.querySelectorAll('.wvsteps button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===st));
+  document.getElementById('wvD').hidden=st!=='d';document.getElementById('wvQ').hidden=st!=='v';document.getElementById('wvNote').hidden=st!=='v';p3dHomeBack();}
+document.querySelectorAll('.wvsteps button').forEach(b=>b.addEventListener('click',()=>wvStep(b.dataset.s)));
+function wvdRender(){const d=S.wvd,o=(arr,v)=>'<option value="">Selecione</option>'+arr.map(([k,t])=>`<option value="${k}"${d[k]===k?'':''}${v===k?' selected':''}>${t}</option>`).join('');
+  const F=(k,lab,html,cls)=>`<label class="${cls||''}" data-c="${k}">${lab}${html}</label>`;
+  document.getElementById('wvD').innerHTML=`<div class="hd">Orçamento · Projeto · Cod Projeto: SUCB-JC2-01 · JANELA DE CORRER 02 FOLHAS | SUPREMA</div>
+   ${F('nom','Nomenclatura utilizada no orçamento',`<textarea data-f="nom" rows="2">${d.nom}</textarea>`,'w2')}
+   ${F('qtd','Quantidade <b>*</b>',`<input data-f="qtd" type="number" min="1" value="${d.qtd}">`)}
+   ${F('L','Largura (mm) <b>*</b>',`<input data-f="L" type="number" value="${d.L}">`)}
+   ${F('H','Altura (mm) <b>*</b>',`<input data-f="H" type="number" value="${d.H}">`)}
+   ${F('ca','Cor acessórios <b>*</b>',`<select data-f="ca">${o(WVDO.ca,d.ca)}</select>`)}
+   ${F('cp','Cor alumínio | perfil <b>*</b>',`<select data-f="cp">${o(WVDO.cp,d.cp)}</select>`)}
+   ${F('vd','Vidro <b>*</b>',`<select data-f="vd">${o(WVDO.vd,d.vd)}</select>`)}
+   ${F('amb','Ambiente',`<input data-f="amb" value="${d.amb}">`)}
+   ${F('tipo','Tipo',`<input data-f="tipo" value="${d.tipo}">`)}
+   ${F('dt','Dt. entrega',`<input data-f="dt" type="date" value="${d.dt}">`)}
+   ${F('cm','Contramarco',`<select data-f="cm">${o(WVDO.sn,d.cm)}</select>`)}
+   ${F('ar','Arremate',`<select data-f="ar">${o(WVDO.sn,d.ar)}</select>`)}
+   ${F('ap','Arrem. piso',`<select data-f="ap">${o(WVDO.sn,d.ap)}</select>`)}
+   ${F('tm','Tipo medida contramarco',`<select data-f="tm">${o(WVDO.tm,d.tm)}</select>`)}
+   ${F('ordem','Ordem',`<input data-f="ordem" type="number" value="${d.ordem}">`)}
+   <button type="button" class="btn nx" id="wvNext">Avançar para as variáveis →</button>`;
+  document.querySelectorAll('#wvD [data-f]').forEach(el=>el.addEventListener('change',()=>{const f=el.dataset.f;d[f]=el.type==='number'?(el.value===''?'':+el.value):el.value;
+    el.closest('label').classList.remove('ok','bad');tmStart('wv');trk('wv_resp',{k:f,v:d[f]});wvdApply();build();wvList();wvVis();}));
+  document.getElementById('wvNext').addEventListener('click',()=>wvStep('v'));}
+/* contramarco NÃO esconde C/W; arremate NÃO esconde A */
+function wvVis(){const d=S.wvd||{};document.querySelectorAll('.wvrow').forEach(r=>{const k=r.dataset.k;r.hidden=(d.cm==='NAO'&&(k==='C'||k==='W'))||(d.ar==='NAO'&&k==='A');});}
+const WVDP={qtd:'Quantidade',L:'Largura',H:'Altura',ca:'Cor acessórios',cp:'Cor alumínio | perfil',vd:'Vidro',cm:'Contramarco',ar:'Arremate',ap:'Arrem. piso',tm:'Tipo medida contramarco'};
 /* cronômetro dos desafios WVetro e CEM: começa na 1ª resposta, para no Conferir; sem placar de acertos durante */
 const TMR={wv:{t0:0,fin:0,lim:300000,id:'wv'},cm:{t0:0,fin:0,lim:480000,id:'cm'}};
 function tmStart(k){const t=TMR[k];if(!t.t0&&!t.fin)t.t0=Date.now();}
@@ -2116,8 +2165,8 @@ function wvRender(){p3dHomeBack();const q=document.getElementById('wvQ'),a=S.wv;
     el.addEventListener('change',()=>{S.wv[k]=el.tagName==='INPUT'?(+el.value||0):el.value;r.classList.remove('ok','bad');document.getElementById('wvRes').hidden=true;
       tmStart('wv');trk('wv_resp',{k,v:S.wv[k]});build();wvList();wvShow(k,r);});
     r.querySelector('.wvsee').addEventListener('click',()=>wvShow(k,r));});
-  wvList();}
-function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
+  wvList();wvVis();}
+function wvList(){const a=Object.assign({},S.wv);if(S.wvd){if(S.wvd.cm==='NAO')a.C='';if(S.wvd.ar==='NAO')a.A='';}const m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
   const lat=a.R==='SU-007+SU-291';
   if(a.C)add(rows,a.C,'Contramarco ('+(a.W==='90'?'90°/90°':'45°/45°')+')','4 pç');
   if(a.A==='MP-347')add(rows,'MP-347','Arremate (alisar) face interna, corte 45°','4 pç');else if(a.A)add(rows,'CT-001','Arremate centro de parede','4 pç');
@@ -2131,17 +2180,21 @@ function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,
   if(a.W==='90')add(cr,'','Cantoneira do contramarco 90° (código a confirmar)','4 un');
   if(a.A==='MP-347'){const nP=L=>Math.max(2,Math.ceil(L/450)+1),n=2*nP(S.h-120)+2*nP(S.w-120);add(cr,'NYL-190','Presilha de nylon do alisar',n+' un');add(cr,'PAR-936','Parafuso de fixação da presilha',n+' un');}
   document.getElementById('wvList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Pç por tipologia</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes que mudam com as respostas · un por tipologia</td></tr>${cr.join('')}</table>
-    <p class="note">Medidas de corte entram quando tivermos a lista do WVetro para conferir. Folgas: ${a.X} mm na largura e ${a.Y} mm na altura.</p>`;}
-function wvNewPed(){tmReset('wv');CT.set(0,ctY(),0);camTarget=viewPos(curView);TMR.wv.timeout=false;S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y};
+    <p class="note">Quantidades por tipologia (1 janela${S.wvd&&+S.wvd.qtd>1?`; o pedido tem ${S.wvd.qtd} janelas`:''}). Medidas de corte entram quando tivermos a lista do WVetro. Folgas: ${a.X} mm na largura e ${a.Y} mm na altura.</p>`;}
+function wvNewPed(){tmReset('wv');S.wvd=wvdNew();const pk=a=>a[Math.floor(Math.random()*a.length)][0];
+  const D={qtd:1+Math.floor(Math.random()*4),L:1000+50*Math.floor(Math.random()*21),H:800+50*Math.floor(Math.random()*9),ca:pk(WVDO.ca),cp:pk(WVDO.cp),vd:pk(WVDO.vd),cm:Math.random()<.8?'SIM':'NAO',ar:Math.random()<.75?'SIM':'NAO',ap:Math.random()<.3?'SIM':'NAO',tm:pk(WVDO.tm)};CT.set(0,ctY(),0);camTarget=viewPos(curView);TMR.wv.timeout=false;S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y,D};
   keys.forEach(k=>{const o=WVQ.find(x=>x.k===k).o;WVP[k]=o[Math.floor(Math.random()*o.length)][0];});
-  document.getElementById('wvPed').innerHTML=`<b>Pedido do cliente · JCR 200 · ${S.w} × ${S.h} mm</b><ul>${keys.map(k=>`<li>${WVTXT[k][WVP[k]]}</li>`).join('')}<li>folgas padrão da serralheria</li></ul>`;
-  WVQ.forEach(x=>{S.wv[x.k]=x.n!=null?x.n:'';});document.getElementById('wvRes').hidden=true;wvRender();build();trk('wv_pedido',{p:WVP});}
-function wvCheck(){if(!WVP)return;let ok=0;const errs=[],ms=tmStop('wv'),to=!!TMR.wv.timeout;
-  WVQ.forEach(x=>{const r=document.querySelector(`.wvrow[data-k="${x.k}"]`),good=String(S.wv[x.k])===String(WVP[x.k]);r.classList.toggle('ok',good);r.classList.toggle('bad',!good);
+  const sk=k=>(D.cm==='NAO'&&(k==='C'||k==='W'))||(D.ar==='NAO'&&k==='A');
+  document.getElementById('wvPed').innerHTML=`<b>Pedido do cliente · JCR 200</b><ul><li>${D.qtd} ${D.qtd>1?'janelas':'janela'} de ${D.L} × ${D.H} mm (L × H)</li><li>alumínio ${D.cp.toLowerCase()}, acessórios ${D.ca.toLowerCase()}</li><li>vidro ${D.vd.toLowerCase()}</li><li>${D.cm==='SIM'?`com contramarco (medida ${D.tm.toLowerCase()} do contramarco)`:'sem contramarco'}</li><li>${D.ar==='SIM'?'com arremate':'sem arremate'}${D.ap==='SIM'?' e arremate de piso':''}</li>${keys.filter(k=>!sk(k)).map(k=>`<li>${WVTXT[k][WVP[k]]}</li>`).join('')}<li>folgas padrão da serralheria</li></ul>`;
+  WVQ.forEach(x=>{S.wv[x.k]=x.n!=null?x.n:'';});document.getElementById('wvRes').hidden=true;wvdApply();wvdRender();wvRender();wvStep('d');build();trk('wv_pedido',{p:WVP});}
+function wvCheck(){if(!WVP)return;let ok=0,tot=0;const errs=[],ms=tmStop('wv'),to=!!TMR.wv.timeout,D=WVP.D,d=S.wvd;
+  Object.keys(WVDP).forEach(f=>{if(f==='tm'&&D.cm==='NAO')return;tot++;const g=String(d[f])===String(D[f]),lb=document.querySelector(`#wvD label[data-c="${f}"]`);if(lb){lb.classList.toggle('ok',g);lb.classList.toggle('bad',!g);}
+    if(g)ok++;else errs.push(`<li><b>Dados – ${WVDP[f]}:</b> o pedido pede ${String(D[f]).replace('NAO','NÃO')}</li>`);});
+  WVQ.forEach(x=>{if((D.cm==='NAO'&&(x.k==='C'||x.k==='W'))||(D.ar==='NAO'&&x.k==='A'))return;tot++;const r=document.querySelector(`.wvrow[data-k="${x.k}"]`),good=String(S.wv[x.k])===String(WVP[x.k]);r.classList.toggle('ok',good);r.classList.toggle('bad',!good);
     if(good)ok++;else errs.push(`<li><b>${x.k} – ${x.l}:</b> ${x.n!=null?`o padrão é ${x.n} mm (só muda com orientação da produção)`:`o pedido pede “${WVTXT[x.k][WVP[x.k]]}” → ${(x.o.find(o=>o[0]===WVP[x.k])||[])[1]}`}</li>`);});
-  const pct=Math.round(ok/WVQ.length*100),st=to?0:pct===100?3:pct>=80?2:pct>=50?1:0,el=document.getElementById('wvRes');
-  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${WVQ.length} variáveis (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
-  el.hidden=false;trk('wvetro',{t:'jcr200',ok,tot:WVQ.length,pct,stars:st,ms,esgotado:to});}
+  const pct=Math.round(ok/tot*100),st=to?0:pct===100?3:pct>=80?2:pct>=50?1:0,el=document.getElementById('wvRes');
+  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
+  el.hidden=false;trk('wvetro',{t:'jcr200',ok,tot,pct,stars:st,ms,esgotado:to});}
 document.getElementById('wvCheck').addEventListener('click',wvCheck);
 document.getElementById('wvNew').addEventListener('click',wvNewPed);
 
