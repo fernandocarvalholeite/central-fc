@@ -137,6 +137,28 @@ aside{display:flex;flex-direction:column;gap:14px;min-width:0}
 .wvres{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}.wvres .stars{font-size:26px}.wvres ul{margin:6px 0 0;padding-left:18px}
 .wvlist summary{cursor:pointer;font-weight:600;font-size:13px}.wvlist table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
 .wvlist th,.wvlist td{border-bottom:1px solid var(--line);padding:4px 4px;text-align:left;vertical-align:top}.wvlist td.q{text-align:right;white-space:nowrap}.wvlist .sub{font-weight:600;padding-top:8px}
+.card.cem{background:#454a57;border-color:#353944;color:#e8eaee}.card.cem .wvlist summary,.card.cem .wvres{color:#e8eaee}
+.cemtit{display:flex;flex-direction:column;gap:2px}.cemtit span{font-weight:600;font-size:15px}.cemtit small{font-size:11px;color:#c3c8d1;letter-spacing:.02em}
+.card.cem .wvped{background:#3a3e49;border-color:#5a6070;color:#e8eaee}
+.cemtabs{display:flex;gap:2px;border-bottom:1px solid #5a6070}.cemtabs button{font:inherit;font-size:12.5px;padding:6px 9px;background:#3d414c;color:#d6dae1;border:1px solid #5a6070;border-bottom:0;border-radius:4px 4px 0 0;cursor:pointer}
+.cemtabs button[aria-pressed=true]{background:#545a68;color:#fff}
+.cempane{display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.cemf{display:grid;grid-template-columns:96px 1fr;gap:6px;align-items:center}.cemf label{text-align:right;color:#d6dae1}
+.cempane input,.cempane select,.cempane textarea{font:inherit;font-size:12.5px;background:#5b6170;color:#fff;border:1px solid #6d7484;border-radius:3px;padding:4px 6px;min-width:0}
+.cempane textarea{min-height:52px;resize:vertical}.cemlim{font-size:11px;color:#c3c8d1;grid-column:2}.cemf .bad,.cemrow.bad .v{outline:2px solid #ff7b7b}.cemrow.ok .v{outline:2px solid #6fd28a}
+.cemf.bad input{outline:2px solid #ff7b7b}.cemf.ok input,.cemf.ok select{outline:2px solid #6fd28a}
+.cemsub{font-weight:600;color:#fff;margin-top:4px}
+.cemchk{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.cemchk fieldset{border:1px solid #5a6070;border-radius:4px;padding:4px 6px;margin:0}.cemchk legend{font-size:11.5px;color:#d6dae1;padding:0 3px}
+.cemchk label{display:flex;gap:5px;align-items:center;font-size:11.5px;color:#eef0f3;padding:1px 0}
+.cemvt{width:100%;border-collapse:collapse;font-size:11.5px}.cemvt th,.cemvt td{border-bottom:1px solid #5a6070;padding:4px;text-align:left}.cemvt tr.sel td{background:#5b6170}
+.cemvt tr[data-v]{cursor:pointer}.cemvt tr[data-v]:hover td{background:#555b69}
+.cemrow{border:1px solid #5a6070;border-radius:4px;background:#3d414c}.cemrow>button{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;font:inherit;font-size:11.5px;text-align:left;padding:5px 7px;background:none;border:0;color:#e8eaee;cursor:pointer}
+.cemrow>button .v{color:#fff;background:#5b4a55;padding:1px 4px;border-radius:2px}.cemrow[open]>button,.cemrow.on>button{background:#545a68}
+.cemopt{display:none;padding:6px 9px 8px;border-top:1px solid #5a6070}.cemrow.on .cemopt{display:block}
+.cemopt .q{color:#d6dae1;margin-bottom:4px}.cemopt label{display:flex;gap:6px;align-items:center;padding:2px 0;color:#fff}.cemopt .lg{margin-top:5px;font-size:11px;font-weight:600;color:#c3c8d1;text-transform:uppercase}
+.cemopt .wvsee{margin-top:6px}
+.cempane .cemchk label,.cempane .cemopt label{justify-content:flex-start;text-align:left;flex-direction:row}.cempane .cemchk input,.cempane .cemopt input{width:auto;flex:none;margin:0;padding:0;background:none;border:0;accent-color:#e8eaee}
+.cemwarn{font-size:11px;font-weight:600;color:#e8eaee;margin:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .card h2{font-family:var(--f-display);font-size:15px;font-weight:600;margin:0;text-transform:uppercase;letter-spacing:.06em}
 .card p{margin:0}
@@ -272,6 +294,7 @@ details.card:not([open]){gap:0}
       <button id="m-exp" aria-pressed="true">Conhecer a esquadria</button>
       <button id="m-test" aria-pressed="false">Desafio: monte a esquadria</button>
       <button id="m-wv" aria-pressed="false">Desafio WVetro</button>
+      <button id="m-cem" aria-pressed="false">Desafio CEM</button>
     </div>
     </div>
   </header>
@@ -304,6 +327,16 @@ details.card:not([open]){gap:0}
     </div>
 
     <aside id="side">
+      <div class="card cem" id="c-cem" hidden>
+        <div class="cemtit"><span>Opções de Montagem · A2</span><small>JANELA DE CORRER – 2 FOLHAS – LINHA SUPREMA</small></div>
+        <div class="wvped" id="cmPed"></div>
+        <div class="cemtabs" role="tablist"><button type="button" data-t="ig" aria-pressed="true">Informações Gerais</button><button type="button" data-t="vd" aria-pressed="false">Vidros</button><button type="button" data-t="om" aria-pressed="false">Opções de Montagem</button></div>
+        <div class="cempane" id="cmIG"></div><div class="cempane" id="cmVD" hidden></div><div class="cempane" id="cmOM" hidden></div>
+        <p class="cemwarn">ATENÇÃO: A especificação incorreta para os valores das opções de montagem poderá trazer inconsistências para o cálculo da esquadria.</p>
+        <div class="wvact"><button class="btn" id="cmCheck" type="button">Conferir respostas</button><button class="btn sec" id="cmNew" type="button">Novo pedido</button></div>
+        <div class="wvres" id="cmRes" hidden></div>
+        <details class="wvlist" open><summary>Lista gerada (perfis e componentes)</summary><div id="cmList"></div></details>
+      </div>
       <div class="card" id="c-wv" hidden>
         <h2>Resposta de variáveis</h2>
         <div class="wvped" id="wvPed"></div>
@@ -930,23 +963,23 @@ function build(){
   const LROT=fr.s==='SU-003';
   if(S.wvOn&&S.typo==='jcr200'){/* contramarco e arremate do Desafio WVetro */
     const a=S.wv,fx=(+a.X||0)/2000,fy=(+a.Y||0)/2000,RK0=RK;RK=null;
-    const piece=(c,len,dir,out,pos,mode,zpos,lbl)=>{const d=SHAPES[c],k=sc(d);let ymin=1e9;d.s.forEach(o=>o.o.forEach(q=>ymin=Math.min(ymin,q[1]*k)));
+    const piece=(c,len,dir,out,pos,mode,zpos,lbl,ZX)=>{ZX=ZX||Z;const d=SHAPES[c],k=sc(d);let ymin=1e9;d.s.forEach(o=>o.o.forEach(q=>ymin=Math.min(ymin,q[1]*k)));
       const shapes=d.s.map(o=>{const sh=new THREE.Shape(o.o.map(([px,py])=>new THREE.Vector2(px*k,py*k-ymin)));o.h.forEach(h=>sh.holes.push(new THREE.Path(h.map(([px,py])=>new THREE.Vector2(px*k,py*k-ymin)))));return sh;});
       const g=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:1});g.translate(0,0,-len/2);
       const P=g.attributes.position,hh=d.h*k;for(let i=0;i<P.count;i++){const z=P.getZ(i),y=P.getY(i),sg=z>0?1:-1;if(mode==='m')P.setZ(i,z+sg*y);else if(mode==='mi')P.setZ(i,z-sg*y);}
-      g.applyMatrix4(new THREE.Matrix4().makeBasis(Z,out,dir));g.computeVertexNormals();
+      g.applyMatrix4(new THREE.Matrix4().makeBasis(ZX,out,dir));g.computeVertexNormals();
       const mat=matFor('marco',c,c.startsWith('CM')?CMM:ARM);mat.side=THREE.DoubleSide;const m=new THREE.Mesh(g,mat);m.position.copy(pos);m.position.z=zpos;
-      m.userData={zone:c,lbl,part:'marco',vert:Math.abs(dir.y)>.5,code:c,cap:{shapes,ex:Z,ey:out,ez:dir}};group.add(m);reg(m);profMeshes.push(m);zoneMeshes.push(m);if(lbl)labelObjs.push(m);LEN[c]=(LEN[c]||0)+len;return m;};
+      m.userData={zone:c,lbl,part:'marco',vert:Math.abs(dir.y)>.5,code:c,cap:{shapes,ex:ZX,ey:out,ez:dir}};group.add(m);reg(m);profMeshes.push(m);zoneMeshes.push(m);if(lbl)labelObjs.push(m);LEN[c]=(LEN[c]||0)+len;return m;};
     const CMM=new THREE.MeshStandardMaterial({color:0x6a747b,metalness:.45,roughness:.5}),ARM=new THREE.MeshStandardMaterial({color:0xd9dee2,metalness:.2,roughness:.5});
     const C=a.C||'CM-200',cw=SHAPES[C].w/1000,ch=SHAPES[C].h/1000,ix=W/2+fx,iy=H/2+fy,V3=(x,y,z)=>new THREE.Vector3(x,y,z);
     /* contramarco: aba de 24 mm no lado externo, alma apoiada no vão da alvenaria, garras para dentro da massa; a janela encosta na aba */
     const SK=(sx,sy)=>sx<0?'left':sx>0?'right':sy>0?'top':'bot';
-    const DSL=PW(fr.s)/2,yw=C==='CM-174'?.0125:.0098,zc=-DSL+cw/2-.0013,ox=ix+yw,oy=iy+yw;
+    const DSL=PW(fr.s)/2,yw=C==='CM-174'?.0125:.0098,zc=DSL-cw/2+.0013,ox=ix+yw,oy=iy+yw,cy0=fy,NZ=neg(Z);
     if(a.C)[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0,m45=a.W==='45',len=vert?2*oy:(m45?2*ox:2*(ox-ch));
-      RK='W-cm-'+SK(sx,sy);piece(C,len,vert?Y:X,V3(-sx,-sy,0),V3(sx*ox,sy*oy,0),m45?'mi':'',zc,i===0);});
-    if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,cw*.6),cm);b.position.set(sx*(ox-.012),sy*(oy-.012),zc);RK='W-cm-'+SK(sx,0);group.add(b);reg(b);}));}
+      RK='W-cm-'+SK(sx,sy);piece(C,len,vert?Y:X,V3(-sx,-sy,0),V3(sx*ox,sy*oy+cy0,0),m45?'mi':'',zc,i===0,NZ);});
+    if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,cw*.6),cm);b.position.set(sx*(ox-.012),sy*(oy-.012)+cy0,zc);RK='W-cm-'+SK(sx,0);group.add(b);reg(b);}));}
     /* arremate: moldura com corte 45° sobre o quadro (SU-001 / SU-003 / SU-002) pelo lado de dentro */
-    if(a.A==='MP-347'){const aw=SHAPES['MP-347'].w/1000,zi=DSL+aw/2+.001,ax=W/2-.004,ay=H/2-.004;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
+    if(a.A==='MP-347'){const aw=SHAPES['MP-347'].w/1000,zi=DSL+aw/2+.0025,ax=W/2-.004,ay=H/2-.004;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
       RK='W-ar-'+SK(sx,sy);piece('MP-347',vert?2*ay:2*ax,vert?Y:X,V3(sx,sy,0),V3(sx*ax,sy*ay,0),'m',zi,i===0);});
       /* presilhas de nylon NYL-190 presas no quadro com parafuso PAR-936 */
       const pm=new THREE.MeshStandardMaterial({color:0xf3f3ee,roughness:.6}),nP=L=>Math.max(2,Math.ceil(L/.45)+1);
@@ -1064,7 +1097,8 @@ function build(){
     }
     if(sd.ven&&!sd.fixed){[xLc,xRc].forEach((xx,j)=>{RK=P+(j?'-R':'-L');cb(g,'FEC-645',.026,.153,.003,j?xRc:xLc,-sH/2+.985,-SDs/2-.0015,false);});}
     g.position.set(0,SY,sd.z);group.add(g);
-    SASH.push({id:P,g,i,x0:xAt(slot),y0:SY,z:sd.z,dir:sd.dir||0,fixed:!!sd.fixed,travel:sd.fixed?0:(sd.dir>0?(NSL-1-slot)*step:slot*step),n:sd.n});
+    const FXD=!!sd.fixed||(!!WVA&&((WVA.FF==='dir'&&P==='A')||(WVA.FF==='esq'&&P==='B')));
+    SASH.push({id:P,g,i,x0:xAt(slot),y0:SY,z:sd.z,dir:sd.dir||0,fixed:FXD,travel:FXD?0:(sd.dir>0?(NSL-1-slot)*step:slot*step),n:sd.n});
   }
   let FECHO_LBL=false;
   TY.sashes.forEach((sd,i)=>sash(sd,i));
@@ -1112,7 +1146,7 @@ function build(){
     SASH.push({id:'P',pol:POL,oct:rg.children[0],g:cg,roll:true,fixed:false,travel:0,dir:1,n:'Persiana',x0:0,z:P.cz,slats,rm,pitch,Hc,N,C:new THREE.Vector2(BX-.119,ze+.095-P.cz),sh:PH('LAM-45')});
   }
   RK=null;
-  CUR_P=desmPreset();applyEx();  CUR_P=desmPreset();applyEx();
+  CUR_P=desmPreset();applyEx();  CUR_P=desmPreset();applyEx();cemPost();
   placeSashes();
   CUTDEF=S.cut?cutDef(S.cut,W,H):null;
   if(CUTDEF){
@@ -1387,8 +1421,8 @@ document.getElementById('in-hots').addEventListener('change',e=>{S.hots=e.target
 
 /* Modelos 3D dos componentes (formas simplificadas a partir das imagens do catálogo) */
 const CM={};
-function cmat(k,hl,lt){const key=k+(hl?'h':'')+(lt?'l':'')+S.cor;if(CM[key])return CM[key];
-  const base=lt?0xeceef0:CORES[S.cor];
+function cmat(k,hl,lt){const CC=S.cemOn&&S.cm&&S.cm.CO?S.cm.CO:'';const key=k+(hl?'h':'')+(lt?'l':'')+S.cor+CC;if(CM[key])return CM[key];
+  const base=lt?0xeceef0:CC==='preto'?0x202326:CC==='branco'?0xf1f2f0:CORES[S.cor];
   const c={nyl:[base,.05,.55],alu:[base,.45,.35],zam:[base,.5,.35],brush:[0x1a1b1d,0,1],screw:[0xc9cdd1,.85,.25],rub:[0x141516,0,.9],pink:[0xe36bb3,.05,.5],steel:[0xb9bec3,.85,.3],lat:[0xb5a688,.6,.35]}[k];
   CM[key]=hl&&!['brush','rub','pink','screw','steel'].includes(k)?new THREE.MeshStandardMaterial({color:0xff8a00,emissive:0xb34f00,emissiveIntensity:.7,roughness:.5}):new THREE.MeshStandardMaterial({color:c[0],metalness:c[1],roughness:c[2],emissive:hl?0x8a3a00:0,emissiveIntensity:hl?.4:0});return CM[key];}
 /* Modelos 3D dos componentes, a partir das fotos e cotas dos catálogos MettallFleck e Alcoa (mm convertidos em m) */
@@ -1862,7 +1896,7 @@ function applyTypo(){
   document.getElementById('ttl').textContent=TY.n;document.getElementById('tcode').textContent='Treinamento em Sistema · Linha '+(TY.line==='gold'?'Gold':'Suprema')+' · '+TY.code;
 }
 function setTypo(t){
-  if(S.wvOn&&t!=='jcr200'){S.wvOn=false;setTimeout(()=>setMode('exp'),0);}
+  if(S.wvOn&&t!=='jcr200'){S.wvOn=false;S.cemOn=false;setTimeout(()=>setMode('exp'),0);}
   trk('tipologia',{t});
   if(PONLY)setPOnly(false);document.getElementById('v-pers').hidden=!TYPOS[t].persiana;S.typo=t;S.sel=null;S.focus=null;S.us=null;S.usFocus=false;usPinned=null;S.comp=null;compPinned=null;S.cut=null;S.open={};
   Object.keys(T).forEach(k=>delete T[k]);testReset();curProf=null;
@@ -1874,17 +1908,18 @@ function setTypo(t){
 
 /* Modos */
 function setMode(m){
-  const wv=m==='wv';if(wv)m='exp';const was=S.wvOn;S.wvOn=wv;
-  document.getElementById('m-wv').setAttribute('aria-pressed',wv);document.getElementById('c-wv').hidden=!wv;
-  if(wv&&S.typo!=='jcr200'){S.wvOn=false;setTypo('jcr200');S.wvOn=true;}
-  trk('modo',{t:S.typo,m:wv?'wvetro':m});
+  const cem=m==='cem',wv=m==='wv'||cem;if(wv)m='exp';const was=S.wvOn,wasC=!!S.cemOn;S.wvOn=wv;S.cemOn=cem;
+  document.getElementById('m-wv').setAttribute('aria-pressed',wv&&!cem);document.getElementById('c-wv').hidden=!wv||cem;
+  document.getElementById('m-cem').setAttribute('aria-pressed',cem);document.getElementById('c-cem').hidden=!cem;
+  if(wv&&S.typo!=='jcr200'){S.wvOn=false;S.cemOn=false;setTypo('jcr200');S.wvOn=true;S.cemOn=cem;}
+  trk('modo',{t:S.typo,m:cem?'cem':wv?'wvetro':m});
   if(S.cut){S.cut=null;syncCutUI();CT.set(0,ctY(),0);}
   S.mode=m;S.sel=null;S.focus=null;hideTip();
   document.getElementById('m-exp').setAttribute('aria-pressed',m==='exp'&&!wv);
   document.getElementById('m-test').setAttribute('aria-pressed',m==='test');
   document.getElementById('c-test').hidden=m!=='test';
   document.getElementById('c-parts').hidden=m!=='exp'||wv;
-  document.getElementById('c-dims').hidden=m!=='exp';
+  document.getElementById('c-dims').hidden=m!=='exp'||cem;
   document.getElementById('c-us').hidden=m!=='exp'||wv;
   document.getElementById('c-cuts').hidden=m!=='exp'||wv;
   document.getElementById('c-comp').hidden=m!=='exp';
@@ -1899,12 +1934,128 @@ function setMode(m){
   document.getElementById('v-desm').hidden=m==='test';if(m==='test'&&DESM){DESM=false;EXE=0;const b=document.getElementById('v-desm');b.setAttribute('aria-pressed','false');b.textContent='Desmontar';}
   if(m!=='test'){document.getElementById('tres').hidden=true;document.getElementById('tpop').hidden=true;thint.hidden=true;}
   if(m==='test'){resetOpen();cv.style.cursor='grab';}
-  if(!wv&&was)p3dHomeBack();
-  build();if(wv&&!was)wvNewPed();
+  if(was&&(!wv||cem!==wasC))p3dHomeBack();
+  if(!cem&&wasC){S.w=1500;S.h=1000;S.cor='branco';for(const k in CM)delete CM[k];}
+  if(cem&&!wasC){for(const k in CM)delete CM[k];cemNewPed();return;}
+  build();if(wv&&!cem&&(!was||wasC))wvNewPed();
 }
 document.getElementById('m-exp').addEventListener('click',()=>setMode('exp'));
 document.getElementById('m-test').addEventListener('click',()=>setMode('test'));
 document.getElementById('m-wv').addEventListener('click',()=>setMode('wv'));
+document.getElementById('m-cem').addEventListener('click',()=>setMode('cem'));
+/* ---- Desafio CEM: Opções de Montagem A2 (Janela de correr 2 folhas, Suprema) como no CEM ---- */
+const CMQ=[
+ {k:'U',l:'USA O CONTRAMARCO',q:'Será usado Contramarco?',o:[['sim','SIM','VOU USAR CONTRAMARCO – INFORME QUAL CONTRAMARCO'],['obra','CONTRAMARCO NA OBRA','CONTRAMARCO JÁ INSTALADO NA OBRA'],['sem','OBRA SEM CONTRAMARCO','JANELA FIXADA DIRETO NA ALVENARIA']]},
+ {k:'RM',l:'REFERÊNCIA DAS MEDIDAS',q:'Qual a Referência das Medidas ( L e H )?',o:[['int','INTERNA DO CONTRAMARCO','MEDIDAS A PARTIR DO LADO INTERNO DO CONTRAMARCO OU ( VÃO ACABADO )'],['ext','EXTERNA DO CONTRAMARCO','MEDIDAS PELO LADO EXTERNO DO CONTRAMARCO']]},
+ {k:'TC',l:'TIPO DO CONTRAMARCO',q:'Qual o Ângulo do ContraMarco?',o:[['45','FECHADO - CORTE 45º/45º','MONTAGEM UTILIZANDO MACHO E CUNHA'],['90','FECHADO - CORTE 90º/90º','LATERAIS INTEIRAS E CANTONEIRA NOS CANTOS']]},
+ {k:'CC',l:'CONEXÃO CONTRAMARCO',q:'Qual a conexão do Contramarco?',o:[['mc','PERFIL MACHO E CUNHA','PERFIL MACHO E CUNHA']]},
+ {k:'C',l:'CONTRAMARCO',q:'Qual o Contramarco que será Fornecido ou Já Instalado na obra?',o:[['CM-200','CM200','CONTRAMARCO CADEIRINHA 26MM'],['CM-060','CM060','CONTRAMARCO CADEIRINHA 38MM'],['CM-174','CM174','CONTRAMARCO CADEIRINHA 60MM']]},
+ {k:'A',l:'ARREMATE',q:'Qual o tipo de Arremate?',o:[['reto','FACE INTERNA RETO','ACABAMENTO RETO'],['estreito','CENTRO DE PAREDE OPÇÃO ESTREITO','ARREMATE NO CENTRO DA PAREDE – ESTREITO'],['cant','CENTRO DE PAREDE OPÇÃO CANTONEIRA','ARREMATE NO CENTRO DA PAREDE – CANTONEIRA']]},
+ {k:'Y',n:[3,4],d:'4',l:'FOLGA DA ALTURA',q:'Qual a Folga da Altura?',o:[['3','FOLGA 3mm','FOLGA DA ALTURA (EM CIMA DO CAIXILHO)'],['4','FOLGA 4mm','FOLGA DA ALTURA (EM CIMA DO CAIXILHO)']]},
+ {k:'X',n:[5],l:'FOLGA DA LARGURA',q:'Qual a Folga da Largura?',o:[['5','FOLGA 5mm','FOLGA DA LARGURA']]},
+ {k:'FF',l:'FOLHA FIXA',q:'Qual a Montagem da Folha?',o:[['todas','TODAS CORREM','TODAS AS FOLHAS CORREM'],['dir','FOLHA DIREITA FIXA (VISTA EXTERNA)','FOLHA DIREITA FIXA OLHANDO DE FORA'],['esq','FOLHA ESQUERDA FIXA (VISTA EXTERNA)','FOLHA ESQUERDA FIXA OLHANDO DE FORA']]},
+ {k:'TP',l:'TIPO DE PERFIL',q:'Qual será o Tipo de Perfil?',o:[['com','COM BAGUETE','PERFIL COM BAGUETE'],['sem','SEM BAGUETE','PERFIL SEM BAGUETE']]},
+ {k:'TF',l:'TIPO DA FOLHA',q:'Qual o tipo da Folha?',o:[['comum','FOLHA COMUM (53mm)','FOLHA COM 53MM'],['larga','FOLHA LARGA (65mm)','FOLHA COM 65MM']]},
+ {k:'FL',l:'FOLHA LATERAL',q:'Qual o perfil da Folha Lateral?',o:[['SU-039','SEM REFORÇO','PERFIL SEM REFORÇO'],['SU-044','COM REFORÇO TUBULAR','PERFIL COM REFORÇO TUBULAR'],['SU-250','COM REFORÇO DE ABA','PERFIL COM REFORÇO DE ABA']]},
+ {k:'MM',n:[2,3],l:'MONTAGEM DA MÃO DE AMIGO',q:'QUAL SERÁ A MONTAGEM DE MÃO DE AMIGO?',o:[['42','MONTADA A 90º - M. AMIGO DE 42mm','FOLHA MONTADA A 90° - MÃO DE AMIGO 42MM DE FACE'],['65','MONTADA A 90º - M. AMIGO DE 65mm','FOLHA MONTADA A 90° - MÃO DE AMIGO 65MM DE FACE']]},
+ {k:'M',l:'MÃO DE AMIGO',q:'Qual será a opção de Mão de amigo?',o:[['sem','SEM REFORÇO','PERFIS SEM REFORÇOS'],['ext','REFORÇO EXTERNO','REFORÇO NA FOLHA EXTERNA'],['int','REFORÇO INTERNO','REFORÇO NA FOLHA INTERNA'],['ie','REFORÇO INTERNO E EXTERNO','REFORÇO NAS DUAS FOLHAS']]},
+ {k:'B',l:'BAGUETE',q:'Qual será a opção do Baguete?',o:[['quadrado','QUADRADO','BAGUETES LARGURA E ALTURA QUADRADOS'],['qa','QUADRADO+ARREDONDADO','BAGUETES QUADRADO + ARREDONDADO']]},
+ {k:'F',l:'TIPO DE FECHO',q:'Qual o Tipo de Fecho?',o:[['concha','CONCHA COMUM SEM CHAVE','FECHO CONCHA COMUM SEM CHAVE'],['chave','CONCHA COMUM COM CHAVE','FECHO CONCHA COMUM COM CHAVE'],['crem','CREMONA MULTIPONTO','CREMONA MULTIPONTO'],['mac','MAÇANETA OCULTA MULTIPONTO','MAÇANETA OCULTA MULTIPONTO'],['cm','CREMONA E MAÇANETA OCULTA MULTIPONTO','CREMONA E MAÇANETA OCULTA MULTIPONTO']]},
+ {k:'V',l:'ROLDANA',q:'Qual será a Roldana utilizada?',o:[['15','SIMPLES (15KG)','ROLDANA C/ REGULAGEM S/ROLAMENTO - 15KG POR FOLHA'],['40','SIMPLES (40KG)','ROLDANA SIMPLES - 40KG POR FOLHA']]},
+ {k:'CO',l:'COR DO COMPONENTE',q:'Qual a Cor do Componente?',o:[['branco','BRANCO','COMPONENTE NA COR BRANCO'],['preto','PRETO','COMPONENTE NA COR PRETO']]},
+ {k:'R',l:'TIPO DE MARCO',q:'Qual o Tipo de Marco?',o:[['unico','MARCO ÚNICO','USAR PERFIL ÚNICO'],['comp','MARCO COMPOSTO','MARCO LISO SU-007 + CONTRAFECHO SU-291']]}];
+const CMDEF=Object.fromEntries(CMQ.map(q=>[q.k,q.d||q.o[0][0]]));const CMN=(q,v)=>{const i=q.o.findIndex(o=>o[0]===v);return q.n?q.n[i]:i+1;};
+const CMTRAT=[['natural','ANODIZADO FOSCO (NATURAL)'],['branco','PINTURA BRANCA'],['preto','PINTURA PRETO FOSCO - RAL9005F'],['bronze','ANODIZADO BRONZE']];
+const CMFIL={ref:['CEBRACE','MERCADO'],lin:['HABITAT NEUTRO'],proc:['Vidro Float','Vidro Laminado','Vidro Mini Boreal','Vidro Monolítico','Vidro Temperado'],esp:['4 mm','5 mm','6 mm'],cor:['BRONZE','CINZA','FUME','INCOLOR','VERDE'],ben:['Controle Solar','Bloqueio de Ruídos']};
+const CMFLN={ref:'Referência',lin:'Linha',proc:'Processamento',esp:'Espessura',cor:'Cor',ben:'Benefícios'};
+const CMOK={ref:['MERCADO'],proc:['Vidro Temperado'],esp:['6 mm'],cor:['INCOLOR']};
+S.cm=null;let CMP_=null,CMTAB='ig',CMOPEN=null;
+function cemNew(){return Object.assign({tipo:'A2',qtd:1,loc:'',L:'',H:'',trat:'',CC2:'',ci:'',ce:'',obs:'',fil:{},vidro:''},CMDEF);}
+function cemToWv(){const a=S.cm;
+  S.wv={C:a.U==='sem'?'':a.C,W:a.TC,A:a.A==='reto'?'MP-347':'CT-001',R:a.R==='comp'?'SU-007+SU-291':'SU-003',O:a.TF,E:a.FL,
+    M:{sem:'SU-040+SU-041',ext:'SU-040+SU-049',int:'SU-047+SU-041',ie:'SU-047+SU-049'}[a.M],B:a.B,F:a.F==='chave'?'chave':'trava',V:'ROL-440',X:+a.X,Y:+a.Y,FF:a.FF,TP:a.TP};
+  S.cor=a.trat||'natural';const L=+a.L,H=+a.H;S.w=L>=800&&L<=2200?L:1500;S.h=H>=800&&H<=1900?H:1000;}
+function cemPost(){if(!S.cemOn||!S.cm)return;group.traverse(o=>{if(!o.isMesh)return;const p=o.userData&&o.userData.part;
+  if(p==='baguete'&&S.cm.TP==='sem')o.visible=false;if(p==='vidro'&&!S.cm.vidro)o.visible=false;});}
+function cemApply(focus){cemToWv();for(const k in CM)delete CM[k];build();cemList();if(focus)wvShow(focus.k,focus.row);}
+function cemNewPed(){const ks=CMQ.filter(q=>q.o.length>1).map(q=>q.k),pick=[];while(pick.length<5){const k=ks[Math.floor(Math.random()*ks.length)];if(!pick.includes(k))pick.push(k);}
+  const T=Object.assign({},CMDEF);pick.forEach(k=>{const o=CMQ.find(q=>q.k===k).o.filter(x=>x[0]!==CMDEF[k]);T[k]=o[Math.floor(Math.random()*o.length)][0];});
+  T.L=800+50*Math.floor(Math.random()*29);T.H=800+50*Math.floor(Math.random()*23);T.trat=CMTRAT[Math.floor(Math.random()*CMTRAT.length)][0];CMP_={T,pick};
+  S.cm=cemNew();S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;
+  const L=k=>{const q=CMQ.find(x=>x.k===k);return q.l.toLowerCase()+': '+q.o.find(o=>o[0]===T[k])[1].toLowerCase();};
+  document.getElementById('cmPed').innerHTML=`<b>Pedido do cliente · JCR 200 Suprema</b><ul><li>medida ${T.L} × ${T.H} mm (L × H)</li><li>tratamento: ${CMTRAT.find(x=>x[0]===T.trat)[1].toLowerCase()}</li><li>vidro temperado 6 mm incolor (mercado)</li>${pick.map(k=>`<li>${L(k)}</li>`).join('')}<li>as demais opções ficam no padrão do CEM</li></ul>`;
+  document.getElementById('cmRes').hidden=true;cemTab('ig');cemRender();cemApply();trk('cem_pedido',{p:T});}
+function cemTab(t){CMTAB=t;document.querySelectorAll('.cemtabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t));
+  document.getElementById('cmIG').hidden=t!=='ig';document.getElementById('cmVD').hidden=t!=='vd';document.getElementById('cmOM').hidden=t!=='om';p3dHomeBack();}
+document.querySelectorAll('.cemtabs button').forEach(b=>b.addEventListener('click',()=>cemTab(b.dataset.t)));
+const CMWK={U:'C',TC:'W',C:'C',A:'A',Y:'Y',X:'X',R:'R',TF:'O',FL:'E',M:'M',B:'B',F:'F',V:'V'};
+function cemRender(){p3dHomeBack();const a=S.cm,opt=(arr,v,ph)=>(ph?`<option value="">${ph}</option>`:'')+arr.map(([k,t])=>`<option value="${k}"${v===k?' selected':''}>${t}</option>`).join('');
+  document.getElementById('cmIG').innerHTML=`<div class="cemf"><label>Tipo:</label><input data-f="tipo" value="${a.tipo}"></div>
+    <div class="cemf"><label>Qtd. Peças:</label><input data-f="qtd" type="number" min="1" value="${a.qtd}"></div>
+    <div class="cemf"><label>Localização:</label><input data-f="loc" value="${a.loc}"></div>
+    <div class="cemsub">Medidas (milímetros)</div>
+    <div class="cemf" data-c="L"><label>Largura:</label><input data-f="L" type="number" value="${a.L}"><span class="cemlim">mín. 800 · máx. 2200 (fabricante)</span></div>
+    <div class="cemf" data-c="H"><label>Altura:</label><input data-f="H" type="number" value="${a.H}"><span class="cemlim">mín. 800 · máx. 1900 (fabricante)</span></div>
+    <div class="cemsub">Outras Informações</div>
+    <div class="cemf" data-c="trat"><label>Trat. Perfis:</label><select data-f="trat">${opt(CMTRAT,a.trat,'Selecione')}</select></div>
+    <div class="cemf"><label>Cor Compon.:</label><select data-f="CC2">${opt([['branco','BRANCO'],['preto','PRETO']],a.CC2,'')}</select></div>
+    <div class="cemf"><label>Cor Int.:</label><select data-f="ci">${opt(CMTRAT,a.ci,'')}</select></div>
+    <div class="cemf"><label>Cor Ext.:</label><select data-f="ce">${opt(CMTRAT,a.ce,'')}</select></div>
+    <div class="cemf"><label>Observações:</label><textarea data-f="obs">${a.obs}</textarea></div>`;
+  document.getElementById('cmIG').querySelectorAll('[data-f]').forEach(el=>el.addEventListener('change',()=>{const f=el.dataset.f;a[f]=el.type==='number'?(el.value===''?'':+el.value):el.value;
+    const box=el.closest('.cemf');box.classList.remove('ok','bad');
+    if(f==='L'||f==='H'){const v=+el.value,mx=f==='L'?2200:1900;if(el.value!==''&&(v<800||v>mx)){box.classList.add('bad');el.title='Fora da medida mínima/máxima do fabricante';}}
+    trk('cem_resp',{k:f,v:a[f]});cemApply();}));
+  const fil=a.fil;
+  document.getElementById('cmVD').innerHTML=`<div class="cemsub">Necessidade da Tipologia:</div><div class="cemchk">${Object.keys(CMFIL).map(g=>`<fieldset><legend>${CMFLN[g]}</legend>${CMFIL[g].map(v=>`<label><input type="checkbox" data-g="${g}" value="${v}"${(fil[g]||[]).includes(v)?' checked':''}>${v}</label>`).join('')}</fieldset>`).join('')}</div>
+    <div class="cemsub">Vidros encontrados</div><div id="cmVL"></div>
+    <div class="cemsub">Selecionar para:</div><table class="cemvt"><tr><th>Selecionar para</th><th>Código</th><th>Descrição</th></tr><tr><td>VIDRO FOLHA</td><td>${a.vidro||''}</td><td>${a.vidro?'Temperado de 6 mm':''}</td></tr></table>
+    ${a.vidro?'<button type="button" class="btn sec" id="cmVRm">Remover vidro selecionado</button>':''}`;
+  const vl=()=>{const ok=Object.keys(CMOK).every(g=>{const s=fil[g]||[];return CMOK[g].every(v=>s.includes(v))&&s.every(v=>CMOK[g].includes(v));})&&!(fil.lin||[]).length&&!(fil.ben||[]).length;
+    const any=Object.values(fil).some(x=>x.length);
+    document.getElementById('cmVL').innerHTML=ok?`<table class="cemvt"><tr><th>Código</th><th>Descrição</th><th>Esp.</th><th>Cor</th><th>Preço/M²</th></tr><tr data-v="V-TEMP-06"${a.vidro?' class="sel"':''}><td>V-TEMP-06</td><td>Temperado de 6 mm</td><td>6,00</td><td>INCOLOR</td><td>170,00</td></tr></table><p class="cemlim" style="margin:4px 0 0">Clique no vidro para selecionar para VIDRO FOLHA.</p>`
+      :`<p class="cemlim" style="margin:0">${any?'Nenhum vidro com esses filtros. Confira referência, processamento, espessura e cor do pedido.':'Marque os filtros da necessidade da tipologia.'}</p>`;
+    const tr=document.querySelector('#cmVL tr[data-v]');if(tr)tr.addEventListener('click',()=>{a.vidro='V-TEMP-06';trk('cem_resp',{k:'vidro',v:a.vidro});cemRender();cemTab('vd');cemApply();});};
+  document.getElementById('cmVD').querySelectorAll('input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>{const g=c.dataset.g,s=fil[g]||(fil[g]=[]);if(c.checked)s.push(c.value);else s.splice(s.indexOf(c.value),1);vl();}));vl();
+  {const b=document.getElementById('cmVRm');if(b)b.addEventListener('click',()=>{a.vidro='';cemRender();cemTab('vd');cemApply();});}
+  document.getElementById('cmOM').innerHTML=CMQ.map(q=>{const o=q.o.find(x=>x[0]===a[q.k])||q.o[0],i=CMN(q,o[0]);
+    return `<div class="cemrow" data-k="${q.k}"><button type="button"><span>${q.l}</span><span class="v">${i} - ${o[1]}</span></button><div class="cemopt"><div class="q">${q.q}</div>${q.o.map(([v,t])=>`<label><input type="radio" name="cm${q.k}" value="${v}"${a[q.k]===v?' checked':''}>${t}</label>`).join('')}<div class="lg">${o[2]}</div>${CMWK[q.k]?'<button type="button" class="wvsee">Ver no 3D</button>':''}</div></div>`;}).join('');
+  document.getElementById('cmOM').querySelectorAll('.cemrow').forEach(r=>{const k=r.dataset.k,q=CMQ.find(x=>x.k===k);
+    if(CMOPEN===k)r.classList.add('on');
+    r.querySelector(':scope>button').addEventListener('click',()=>{const on=!r.classList.contains('on');document.querySelectorAll('.cemrow.on').forEach(x=>x.classList.remove('on'));if(on){r.classList.add('on');CMOPEN=k;}else CMOPEN=null;p3dHomeBack();});
+    r.querySelectorAll('input[type=radio]').forEach(x=>x.addEventListener('change',()=>{a[k]=x.value;const o=q.o.find(y=>y[0]===x.value),i=CMN(q,o[0]);
+      r.querySelector('.v').textContent=i+' - '+o[1];r.querySelector('.lg').textContent=o[2];r.classList.remove('ok','bad');document.getElementById('cmRes').hidden=true;
+      trk('cem_resp',{k,v:a[k]});cemApply(CMWK[k]?{k:CMWK[k],row:r}:null);}));
+    const sb=r.querySelector('.wvsee');if(sb)sb.addEventListener('click',()=>{cemToWv();wvShow(CMWK[k],r);});});
+  cemList();}
+function cemList(){const a=S.cm,w=S.wv,m=(w.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
+  if(a.U==='sim')add(rows,w.C,'Contramarco ('+(a.TC==='90'?'90°/90°':'45°/45°')+')','4 pç');else if(a.U==='obra')add(rows,w.C,'Contramarco já instalado na obra (não entra na lista)','—');
+  if(a.A==='reto')add(rows,'MP-347','Arremate face interna reto, corte 45°','4 pç');else add(rows,'',a.A==='estreito'?'Arremate centro de parede estreito (código a confirmar)':'Arremate centro de parede cantoneira (código a confirmar)','4 pç');
+  add(rows,'SU-001','Marco superior','1 pç');add(rows,'SU-002','Marco inferior','1 pç');
+  if(a.R==='comp'){add(rows,'SU-007','Marco lateral liso','2 pç');add(rows,'SU-291','Contrafecho do marco composto','2 pç');}else add(rows,'SU-003','Marco lateral único','2 pç');
+  add(rows,'SU-053','Travessas da folha','4 pç');add(rows,w.E,'Folha lateral'+(a.TF==='larga'?' (folha larga 65 mm: perfil a confirmar)':''),'2 pç');
+  add(rows,m[0],'Mão de amigo folha interna'+(a.MM==='65'?' (65 mm: perfil a confirmar)':''),'1 pç');add(rows,m[1],'Mão de amigo folha externa','1 pç');
+  if(a.TP==='sem')add(rows,'','Perfis sem baguete (a confirmar)','—');else if(a.B==='qa'){add(rows,'SU-102','Baguete quadrado','4 pç');add(rows,'SU-104','Baguete arredondado','4 pç');}else add(rows,'SU-102','Baguete quadrado','8 pç');
+  const FT={concha:'Fecho concha comum sem chave',chave:'Fecho concha comum com chave',crem:'Cremona multiponto',mac:'Maçaneta oculta multiponto',cm:'Cremona e maçaneta oculta multiponto'}[a.F];
+  add(cr,'',FT+' (código a confirmar)','1 un');add(cr,'',a.V==='40'?'Roldana simples 40 kg por folha':'Roldana com regulagem sem rolamento 15 kg (ROL-426)','4 un');
+  if(a.U!=='sem'&&a.TC==='90')add(cr,'','Cantoneira do contramarco 90° (código a confirmar)','4 un');
+  if(a.A==='reto'){const nP=L=>Math.max(2,Math.ceil(L/450)+1),n=2*nP(S.h-120)+2*nP(S.w-120);add(cr,'NYL-190','Presilha de nylon do alisar',n+' un');add(cr,'PAR-936','Parafuso da presilha',n+' un');}
+  const gl=a.vidro?`<tr><td>V-TEMP-06</td><td>Vidro temperado 6 mm incolor · VIDRO FOLHA</td><td class="q">2 un</td></tr>`:'';
+  document.getElementById('cmList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Qtd</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes (cor ${a.CO==='preto'?'preta':'branca'})</td></tr>${cr.join('')}${gl?`<tr><td colspan="3" class="sub">Vidros</td></tr>${gl}`:''}</table>
+    <p class="note">Esquadria ${S.w} × ${S.h} mm · ${CMTRAT.find(x=>x[0]===(a.trat||'natural'))[1].toLowerCase()} · folgas ${a.X} mm (largura) e ${a.Y} mm (altura, em cima).</p>`;}
+function cemCheck(){if(!CMP_)return;const T=CMP_.T,a=S.cm,errs=[];let ok=0,tot=0;
+  const chk=(good,msg)=>{tot++;if(good)ok++;else errs.push(`<li>${msg}</li>`);};
+  const igB=f=>document.querySelector(`#cmIG .cemf[data-c="${f}"]`);
+  [['L','Largura'],['H','Altura']].forEach(([f,n])=>{const g=+a[f]===T[f];chk(g,`<b>${n}:</b> o pedido é ${T[f]} mm.`);const b=igB(f);if(b){b.classList.toggle('ok',g);b.classList.toggle('bad',!g);}});
+  {const g=a.trat===T.trat;chk(g,`<b>Trat. Perfis:</b> o pedido pede ${CMTRAT.find(x=>x[0]===T.trat)[1]}.`);const b=igB('trat');if(b){b.classList.toggle('ok',g);b.classList.toggle('bad',!g);}}
+  chk(a.vidro==='V-TEMP-06','<b>Vidros:</b> filtre MERCADO + Vidro Temperado + 6 mm + INCOLOR e selecione o V-TEMP-06 para VIDRO FOLHA.');
+  CMQ.forEach(q=>{const g=a[q.k]===T[q.k],r=document.querySelector(`.cemrow[data-k="${q.k}"]`);r.classList.toggle('ok',g);r.classList.toggle('bad',!g);
+    chk(g,`<b>${q.l}:</b> ${CMP_.pick.includes(q.k)?'o pedido pede':'fica no padrão'} → ${q.o.find(o=>o[0]===T[q.k])[1]}`);});
+  const pct=Math.round(ok/tot*100),st=pct===100?3:pct>=85?2:pct>=60?1:0,el=document.getElementById('cmRes');
+  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${pct===100?'Parabéns! Esquadria lançada certinha no CEM.':pct>=85?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%).${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
+  el.hidden=false;trk('cem',{t:'jcr200',ok,tot,pct,stars:st});}
+document.getElementById('cmCheck').addEventListener('click',cemCheck);
+document.getElementById('cmNew').addEventListener('click',cemNewPed);
 /* ---- Desafio WVetro: perguntas, lista e pedido do cliente ---- */
 let WVM='livre',WVP=null;
 const WVTXT={C:{'CM-200':'contramarco estreito, de 26,5 mm','CM-060':'contramarco de 38 mm','CM-174':'contramarco largo, de 60 mm (parede grossa)'},
