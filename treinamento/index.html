@@ -304,15 +304,11 @@ details.card:not([open]){gap:0}
 
     <aside id="side">
       <div class="card" id="c-wv" hidden>
-        <h2>Desafio WVetro · variáveis</h2>
-        <div class="lvl" role="group" aria-label="Modo do desafio WVetro">
-          <button type="button" data-w="livre" aria-pressed="true">Livre <small>responda e veja</small></button>
-          <button type="button" data-w="pedido" aria-pressed="false">Pedido do cliente <small>valendo estrelas</small></button>
-        </div>
-        <div class="wvped" id="wvPed" hidden></div>
-        <p class="note" id="wvNote">Responda as variáveis como no WVetro. A janela 3D muda junto com cada resposta.</p>
+        <h2>Resposta de variáveis</h2>
+        <div class="wvped" id="wvPed"></div>
+        <p class="note" id="wvNote">Leia o pedido e responda as variáveis como no WVetro. A janela 3D muda junto com cada resposta. No fim, clique em Conferir respostas.</p>
         <div class="wvq" id="wvQ"></div>
-        <div class="wvact" id="wvAct" hidden><button class="btn" id="wvCheck" type="button">Conferir respostas</button><button class="btn sec" id="wvNew" type="button">Novo pedido</button></div>
+        <div class="wvact" id="wvAct"><button class="btn" id="wvCheck" type="button">Conferir respostas</button><button class="btn sec" id="wvNew" type="button">Novo pedido</button></div>
         <div class="wvres" id="wvRes" hidden></div>
         <details class="wvlist" open><summary>Lista gerada (perfis e componentes)</summary><div id="wvList"></div></details>
       </div>
@@ -1899,7 +1895,7 @@ function setMode(m){
   document.getElementById('v-desm').hidden=m==='test';if(m==='test'&&DESM){DESM=false;EXE=0;const b=document.getElementById('v-desm');b.setAttribute('aria-pressed','false');b.textContent='Desmontar';}
   if(m!=='test'){document.getElementById('tres').hidden=true;document.getElementById('tpop').hidden=true;thint.hidden=true;}
   if(m==='test'){resetOpen();cv.style.cursor='grab';}
-  build();if(wv)wvRender();
+  build();if(wv&&!was)wvNewPed();
 }
 document.getElementById('m-exp').addEventListener('click',()=>setMode('exp'));
 document.getElementById('m-test').addEventListener('click',()=>setMode('test'));
@@ -1950,11 +1946,6 @@ function wvCheck(){if(!WVP)return;let ok=0;const errs=[];
   const pct=Math.round(ok/WVQ.length*100),st=pct===100?3:pct>=80?2:pct>=50?1:0,el=document.getElementById('wvRes');
   el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${WVQ.length} variáveis (${pct}%).${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
   el.hidden=false;trk('wvetro',{t:'jcr200',ok,tot:WVQ.length,pct,stars:st});}
-document.querySelectorAll('#c-wv .lvl button').forEach(b=>b.addEventListener('click',()=>{WVM=b.dataset.w;
-  document.querySelectorAll('#c-wv .lvl button').forEach(x=>x.setAttribute('aria-pressed',x===b));
-  const ped=WVM==='pedido';document.getElementById('wvPed').hidden=!ped;document.getElementById('wvAct').hidden=!ped;
-  document.getElementById('wvNote').textContent=ped?'Leia o pedido e responda as variáveis. Depois clique em Conferir.':'Responda as variáveis como no WVetro. A janela 3D muda junto com cada resposta.';
-  if(ped)wvNewPed();else{WVP=null;S.wv=Object.assign({},WVDEF);document.getElementById('wvRes').hidden=true;wvRender();build();}}));
 document.getElementById('wvCheck').addEventListener('click',wvCheck);
 document.getElementById('wvNew').addEventListener('click',wvNewPed);
 
