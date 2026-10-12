@@ -239,6 +239,7 @@ details.card:not([open]){gap:0}
         <button id="v-side" aria-pressed="false">Lateral</button>
         <label class="lockbtn" for="in-lock"><input id="in-lock" type="checkbox"> Travar folhas</label>
         <label class="lockbtn" for="in-hots"><input id="in-hots" type="checkbox" checked> Junções</label>
+        <button id="v-desm" class="desm" aria-pressed="false" title="Separa as peças como um quebra-cabeça; clique de novo para montar">Desmontar</button>
       </div>
       <div class="hint" id="hint">Passe o mouse numa folha para abrir · entre no vão para fechar · arraste para girar</div>
       <div class="dimtag" id="dimtag">1500 × 1000 mm</div>
@@ -751,7 +752,7 @@ function build(){
     g.position.set(PV,0,ZL);group.add(g);
     SASH.push({id:'A',g,i:0,x0:PV,y0:0,z:ZL,dir:1,fixed:false,travel:0,swing:true,n:'Folha da porta'});
     geo={Wi:2*xo,sW:2*xo,Hi:lh,yc:ly,step:0,NS:1,yT:ym};
-    CUR_P=null;applyEx();placeSashes();
+    CUR_P=desmPreset();applyEx();placeSashes();
     CUTDEF=S.cut?cutDef(S.cut,W,H):null;
     if(CUTDEF){const capM=new THREE.MeshStandardMaterial({color:0x3d4a54,roughness:.6,metalness:.2,side:THREE.DoubleSide});
       profMeshes.forEach(m=>{const c=m.userData.cap;const ax=CUTDEF.axis;if(Math.abs(c.ez[ax])<.9)return;
@@ -772,7 +773,7 @@ function build(){
     SASH.forEach(x=>x.sx=x.x0);
     const xo=W/2-MB-.0082,yo=H/2-MB-.0082,[gw,gh]=TY.glass(W,H),bl=SASH[0].bl;
     geo={Wi:W-2*MB,sW:2*xo,Hi:H-2*MB,yc:0,step:0,NS:1};
-    CUR_P=null;applyEx();placeSashes();
+    CUR_P=desmPreset();applyEx();placeSashes();
     CUTDEF=S.cut?cutDef(S.cut,W,H):null;
     if(CUTDEF){const capM=new THREE.MeshStandardMaterial({color:0x3d4a54,roughness:.6,metalness:.2,side:THREE.DoubleSide});
       profMeshes.forEach(m=>{const c=m.userData.cap;const ax=CUTDEF.axis;if(Math.abs(c.ez[ax])<.9)return;
@@ -911,7 +912,7 @@ function build(){
   let FECHO_LBL=false;
   TY.sashes.forEach((sd,i)=>sash(sd,i));
   RK=null;
-  CUR_P=null;applyEx();  CUR_P=null;applyEx();
+  CUR_P=desmPreset();applyEx();  CUR_P=desmPreset();applyEx();
   placeSashes();
   CUTDEF=S.cut?cutDef(S.cut,W,H):null;
   if(CUTDEF){
@@ -1007,6 +1008,17 @@ function placeSashes(){
   const TYs=TYPOS[S.typo],mv=SASH.filter(x=>!x.fixed),maxT=Math.max(0,...mv.map(x=>x.travel));
   SASH.forEach(s=>{if(s.swing){s.g.position.set(s.x0,0,s.z);s.g.rotation.y=-1.35*(S.open[s.id]||0)/100;return;}if(s.hinge){s.g.position.set(s.x0,s.y0,s.z+(-.03*(S.open[s.id]||0)/100));s.g.rotation.x=.55*(S.open[s.id]||0)/100;return;}let d;if(TYs.seq&&!s.fixed){const tot=(S.open.S||0)/100*maxT;d=Math.min(s.travel,Math.max(0,tot-(maxT-s.travel)));}else d=s.travel*(S.open[s.id]||0)/100;s.g.position.set(s.x0+s.dir*d,s.y0||0,s.z);if(g[s.id])s.g.position.addScaledVector(g[s.id],e);});
 }
+/* Desmontar: separa as peças como um quebra-cabeça (perfis do marco para fora, peças da folha afastadas, folhas puxadas para frente/trás) */
+let DESM=false;
+function desmPreset(){
+  const V=(x,y,z)=>new THREE.Vector3(x,y,z),F=.16,P=.07,off={},grp={};
+  const dir=k=>{const s=k.split('-').pop();
+    if(/^F|^B\d/.test(k)){return s==='left'?V(-F,0,0):s==='right'?V(F,0,0):s==='top'?V(0,F,0):s==='bot'?V(0,-F,0):s==='mid'?V(0,.05,0):null;}
+    return s==='L'?V(-P,0,0):s==='R'?V(P,0,0):s==='top'?V(0,P,0):s==='bot'?V(0,-P,0):s==='mid'?V(0,0,.03):s==='glass'?V(0,0,.09):null;};
+  EX.forEach(x=>{if(!(x.k in off))off[x.k]=dir(x.k);});
+  SASH.forEach(s=>{grp[s.id]=V(0,0,(s.z<0?-1:1)*(.22+Math.abs(s.z)*3));});
+  return {off,grp};
+}
 function applyEx(){
   const off=CUR_P&&CUR_P.off||{};
   EX.forEach(x=>{x.o.position.copy(x.b);const v=off[x.k];if(v)x.o.position.addScaledVector(v,EXE);});
@@ -1040,7 +1052,7 @@ function updateCaps(){
 function trk(t,d){try{if(window.TRK)window.TRK(t,d);}catch(e){}}
 function setCut(k){
   if(k)trk('corte',{t:S.typo,k});
-  S.cut=k;if(k){S.us=null;S.usFocus=false;resetOpen();}
+  S.cut=k;if(k){S.us=null;S.usFocus=false;resetOpen();if(DESM){DESM=false;EXE=0;const b=document.getElementById('v-desm');b.setAttribute('aria-pressed','false');b.textContent='Desmontar';}}
   build();syncCutUI();
   if(CUTDEF){CT.copy(CUTDEF.t);camTarget=CUTDEF.t.clone().add(CUTDEF.c);}
   else{CT.set(0,0,0);camTarget=viewPos(curView);}
@@ -1081,6 +1093,8 @@ function setView(v){
   ['persp','front','side'].forEach(n=>document.getElementById('v-'+n).setAttribute('aria-pressed',n===v));
 }
 ['persp','front','side'].forEach(n=>document.getElementById('v-'+n).addEventListener('click',()=>setView(n)));
+document.getElementById('v-desm').addEventListener('click',e=>{DESM=!DESM;const b=e.currentTarget;b.setAttribute('aria-pressed',DESM);b.textContent=DESM?'Montar':'Desmontar';
+  if(DESM){if(S.cut)setCut(null);resetOpen();CUR_P=desmPreset();}trk('desmontar',{t:S.typo,on:DESM});});
 controls.addEventListener('start',()=>camTarget=null);
 
 /* Lista de peças (Explorar) */
@@ -1111,7 +1125,7 @@ function hotPos(k){
   return V(meetX(+k.slice(1)),yh,.04);
 }
 function updateHots(){
-  const show=S.mode==='exp'&&!S.cut&&S.hots&&!S.us&&!Object.values(S.open).some(v=>v>2);hotsEl.hidden=!show;if(!show)return;
+  const show=S.mode==='exp'&&!S.cut&&!DESM&&S.hots&&!S.us&&!Object.values(S.open).some(v=>v>2);hotsEl.hidden=!show;if(!show)return;
   const w=stage.clientWidth,h=stage.clientHeight;
   hotList.forEach(({c,b})=>{const v=hotPos(c.k);v.project(camera);
     if(v.z>1){b.hidden=true;return;}b.hidden=false;b.style.left=((v.x+1)/2*w)+'px';b.style.top=((1-v.y)/2*h)+'px';});
@@ -1729,7 +1743,7 @@ applyTypo();build();renderParts();renderCuts();renderUs();renderSliders();render
 (function loop(){requestAnimationFrame(loop);stepAnim();
   if(camTarget){if(reduce){camera.position.copy(camTarget);camTarget=null;}
     else{camera.position.lerp(camTarget,.12);if(camera.position.distanceTo(camTarget)<.002)camTarget=null;}}
-  const want=CUR_P?1:0;if(Math.abs(want-EXE)>.001){EXE=reduce?want:EXE+(want-EXE)*.08;if(Math.abs(want-EXE)<.002)EXE=want;applyEx();}
+  const want=DESM?1:0;if(Math.abs(want-EXE)>.001){EXE=reduce?want:EXE+(want-EXE)*.08;if(Math.abs(want-EXE)<.002)EXE=want;applyEx();}
   controls.target.lerp(CT,reduce?1:.1);
   if(CUTDEF)updateCaps();
   controls.update();renderer.render(scene,camera);updateLabels();updateHots();
