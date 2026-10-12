@@ -67,6 +67,11 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);m
 .modes{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
 .modes button{font-family:var(--f-display);font-weight:600;font-size:14px;border:0;background:transparent;color:var(--fg);padding:9px 16px;cursor:pointer}
 .modes button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.modecol{display:flex;flex-direction:column;gap:6px;min-width:0}.modecol .modes{align-self:flex-start}
+.pratica{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.pratica .plab{font-size:12px;color:var(--muted);margin-right:2px}
+.pratica button{font:600 13px var(--f-display);display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--fg);cursor:pointer}
+.pratica button b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--line);color:var(--fg);font-size:11px}
+.pratica button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:#fff}.pratica button[aria-pressed="true"] b{background:#fff;color:var(--accent)}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
 .stage{position:relative;background:var(--stage);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:440px;aspect-ratio:4/3;max-width:100%}
@@ -74,16 +79,15 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3vw,30px);m
 .views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
 .views button,.btn{font-family:var(--f-mono);font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:6px 10px;border-radius:6px;cursor:pointer}
 .views button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-.angw{position:absolute;right:12px;bottom:58px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:4px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:10px;padding:6px 8px;box-shadow:0 2px 8px rgba(0,0,0,.08);user-select:none;-webkit-user-select:none}
-.angw svg{width:88px;height:88px;touch-action:none;cursor:grab;outline:none}.angw svg:active{cursor:grabbing}.angw svg:focus-visible{outline:2px solid var(--accent);border-radius:50%}
-.angw .ring{fill:var(--stage);stroke:var(--line);stroke-width:2}.angw .tk{stroke:var(--muted);stroke-width:1}.angw .tk.mj{stroke:var(--fg);stroke-width:2}
-.angw .arc{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;opacity:.55}.angw .needle{stroke:var(--accent);stroke-width:2}
-.angw .knob{fill:var(--accent);stroke:#fff;stroke-width:2}.angw .lab{font:600 7px var(--f-mono);fill:var(--muted);text-anchor:middle;letter-spacing:.06em}
-.angw .val{font:700 15px var(--f-mono);fill:var(--fg);text-anchor:middle}
-.angtilt{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted)}.angtilt input{width:58px!important;min-width:0!important;flex:none;padding:0;margin:0;accent-color:var(--accent)}.angtilt b{font-family:var(--f-mono);font-size:11px;color:var(--fg);min-width:26px;text-align:right}
-.angbtns{display:flex;gap:3px}.angbtns button{font:600 10.5px var(--f-mono);padding:3px 5px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--fg);cursor:pointer}.angbtns button:hover{border-color:var(--accent)}
-.angw.min{padding:4px}.angw.min .angtilt,.angw.min .angbtns{display:none}.angw.min svg{width:64px;height:64px}
-@media (max-width:640px){.angw svg{width:70px;height:70px}.angbtns{display:none}.angw{bottom:52px;right:8px;padding:4px 6px}}
+.angw{position:absolute;right:12px;bottom:58px;z-index:3}
+.angpad{display:grid;grid-template-columns:repeat(3,30px);grid-template-rows:repeat(3,30px);gap:3px;padding:5px;background:color-mix(in srgb,var(--panel) 90%,transparent);border:1px solid var(--line);border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.08);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.angpad button{font:700 14px var(--f-mono);line-height:1;padding:0;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--fg);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.angpad button:hover{border-color:var(--accent);color:var(--accent)}.angpad button:active{background:var(--accent);color:#fff}
+.angpad .c{font-size:8.5px;font-weight:700;letter-spacing:0}
+.angpad .rd{grid-column:1/4;grid-row:4;font:600 10px var(--f-mono);line-height:1.25;color:var(--muted);text-align:center;white-space:nowrap;padding-top:2px}
+.angpad .e{visibility:hidden}
+.p3d-view .angw{right:8px;bottom:8px}.p3d-view .angpad{grid-template-columns:repeat(3,26px);grid-template-rows:repeat(3,26px)}
+@media (max-width:640px){.angw{bottom:52px;right:8px}.angpad{grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px)}}
 .dimtag{position:absolute;right:12px;bottom:12px;font-family:var(--f-mono);font-size:13px;background:var(--panel);border:1px solid var(--line);padding:6px 10px;border-radius:6px;font-variant-numeric:tabular-nums;z-index:2}
 .hint{position:absolute;left:12px;bottom:12px;right:150px;font-size:12px;color:var(--muted);z-index:2}
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
@@ -311,11 +315,17 @@ details.card:not([open]){gap:0}
     </div>
     <div class="hdr-r">
     <label class="typo" for="typo">Tipologia<select id="typo"></select></label>
+    <div class="modecol">
     <div class="modes" role="group" aria-label="Modo">
       <button id="m-exp" aria-pressed="true">Conhecer a esquadria</button>
-      <button id="m-test" aria-pressed="false">Desafio: monte a esquadria</button>
-      <button id="m-wv" aria-pressed="false">Desafio WVetro</button>
-      <button id="m-cem" aria-pressed="false">Desafio CEM</button>
+      <button id="m-prat" aria-pressed="false">Pratique o conhecimento</button>
+    </div>
+    <div class="pratica" id="pratica" role="group" aria-label="Escolha o desafio" hidden>
+      <span class="plab">3 desafios:</span>
+      <button id="m-test" aria-pressed="false"><b>1</b> Monte a esquadria</button>
+      <button id="m-wv" aria-pressed="false"><b>2</b> Lançamento no WVetro</button>
+      <button id="m-cem" aria-pressed="false"><b>3</b> Lançamento no CEM</button>
+    </div>
     </div>
     </div>
   </header>
@@ -345,17 +355,7 @@ details.card:not([open]){gap:0}
       </div>
       <div class="hint" id="hint">Passe o mouse numa folha para abrir · entre no vão para fechar · arraste para girar</div>
       <div class="dimtag" id="dimtag">1500 × 1000 mm</div>
-      <div class="angw" id="angw" aria-label="Direcionador de ângulo">
-        <svg id="angDial" viewBox="-60 -60 120 120" role="slider" tabindex="0" aria-label="Giro da vista" aria-valuemin="-180" aria-valuemax="180" aria-valuenow="0">
-          <circle r="50" class="ring"/><g id="angTicks"></g>
-          <path id="angArc" class="arc" d=""/>
-          <line id="angNeedle" class="needle" x1="0" y1="0" x2="0" y2="-44"/><circle id="angKnob" class="knob" r="7" cx="0" cy="-44"/>
-          <text class="lab" y="-28">FRENTE</text><text class="lab" y="36">TRÁS</text>
-          <text id="angVal" class="val" y="5">0°</text>
-        </svg>
-        <div class="angtilt"><span>Inclinação</span><input type="range" id="angTilt" min="-15" max="75" step="5" value="10" aria-label="Inclinação da vista"><b id="angTv">10°</b></div>
-        <div class="angbtns"><button type="button" data-a="-15" title="Girar 15° para a esquerda">⟲ 15°</button><button type="button" data-a="0" title="Voltar de frente, sem inclinação">Frente</button><button type="button" data-a="15" title="Girar 15° para a direita">15° ⟳</button></div>
-      </div>
+      <div class="angw" id="angw"></div>
     </div>
 
     <aside id="side">
@@ -406,7 +406,7 @@ details.card:not([open]){gap:0}
       <div class="card p3d" id="p3d" hidden>
         <div class="p3d-head"><button class="p3d-back" id="p3dBack" type="button" title="Fechar e voltar à esquadria inteira">← Voltar</button><span class="eyebrow">Perfil em 3D</span><span class="code" id="p3dCode"></span></div>
         <input class="find" id="find2" list="plist" placeholder="Digite o código, ex.: 053" aria-label="Buscar perfil pelo código" autocomplete="off">
-        <div class="p3d-view" id="p3dView"></div>
+        <div class="p3d-view" id="p3dView"><div class="angw" id="angw2"></div></div>
         <div class="p3d-info"><div><strong id="p3dName"></strong><p id="p3dHint"></p></div></div>
       </div>
 
@@ -1380,35 +1380,25 @@ function setView(v){
 document.getElementById('v-desm').addEventListener('click',e=>{DESM=!DESM;const b=e.currentTarget;b.setAttribute('aria-pressed',DESM);b.textContent=DESM?'Montar':'Desmontar';
   if(DESM){if(S.cut)setCut(null);resetOpen();CUR_P=desmPreset();}if(TYPOS[S.typo].persiana){CT.set(0,ctY(),0);camTarget=viewPos(curView);}trk('desmontar',{t:S.typo,on:DESM});});
 controls.addEventListener('start',()=>camTarget=null);
-/* Direcionador de ângulo: giro em volta da janela (arraste o ponto, passos de 15°) e inclinação */
-(function(){
-  const dial=document.getElementById('angDial'),tk=document.getElementById('angTicks'),tilt=document.getElementById('angTilt'),NS='http://www.w3.org/2000/svg';
-  for(let a=0;a<360;a+=15){const r=a*Math.PI/180,mj=a%90===0,l=document.createElementNS(NS,'line'),r1=mj?40:44;
-    l.setAttribute('x1',Math.sin(r)*r1);l.setAttribute('y1',-Math.cos(r)*r1);l.setAttribute('x2',Math.sin(r)*49);l.setAttribute('y2',-Math.cos(r)*49);l.setAttribute('class','tk'+(mj?' mj':''));tk.appendChild(l);}
-  const cur=()=>{const v=camera.position.clone().sub(controls.target),R=v.length(),az=Math.atan2(v.x,v.z)*180/Math.PI,el=Math.asin(Math.max(-1,Math.min(1,v.y/R)))*180/Math.PI;return {R,az,el};};
-  const put=(az,el,anim)=>{const c=cur(),a=az*Math.PI/180,e=Math.max(-15,Math.min(75,el))*Math.PI/180;
-    const p=controls.target.clone().add(new THREE.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),Math.cos(a)*Math.cos(e)).multiplyScalar(c.R));
-    ['persp','front','side'].forEach(n=>{const b=document.getElementById('v-'+n);if(b)b.setAttribute('aria-pressed','false');});
-    if(anim){camTarget=p;}else{camTarget=null;camera.position.copy(p);controls.update();}};
-  let drag=false;
-  const fromEv=ev=>{const r=dial.getBoundingClientRect(),x=ev.clientX-(r.left+r.width/2),y=ev.clientY-(r.top+r.height/2);let a=Math.atan2(x,-y)*180/Math.PI;if(!ev.shiftKey)a=Math.round(a/15)*15;return a;};
-  dial.addEventListener('pointerdown',ev=>{drag=true;dial.setPointerCapture(ev.pointerId);put(fromEv(ev),cur().el,false);ev.preventDefault();});
-  dial.addEventListener('pointermove',ev=>{if(drag)put(fromEv(ev),cur().el,false);});
-  ['pointerup','pointercancel'].forEach(t=>dial.addEventListener(t,()=>{drag=false;}));
-  dial.addEventListener('keydown',ev=>{const c=cur();if(ev.key==='ArrowLeft'){put(Math.round(c.az/15)*15-15,c.el,true);ev.preventDefault();}if(ev.key==='ArrowRight'){put(Math.round(c.az/15)*15+15,c.el,true);ev.preventDefault();}
-    if(ev.key==='ArrowUp'){put(c.az,Math.round(c.el/5)*5+5,true);ev.preventDefault();}if(ev.key==='ArrowDown'){put(c.az,Math.round(c.el/5)*5-5,true);ev.preventDefault();}});
-  tilt.addEventListener('input',()=>put(cur().az,+tilt.value,false));
-  document.querySelectorAll('.angbtns button').forEach(b=>b.addEventListener('click',()=>{const d=+b.dataset.a,c=cur();if(d===0)put(0,0,true);else put(Math.round(c.az/15)*15+d,c.el,true);}));
-  let last='';
-  (function loop(){const c=cur(),az=Math.round(c.az),el=Math.round(c.el),k=az+'|'+el;
-    if(k!==last){last=k;const a=c.az*Math.PI/180,x=Math.sin(a)*44,y=-Math.cos(a)*44;
-      document.getElementById('angNeedle').setAttribute('x2',x.toFixed(1));document.getElementById('angNeedle').setAttribute('y2',y.toFixed(1));
-      document.getElementById('angKnob').setAttribute('cx',x.toFixed(1));document.getElementById('angKnob').setAttribute('cy',y.toFixed(1));
-      const big=Math.abs(c.az)>180?1:0,sw=c.az>=0?1:0;document.getElementById('angArc').setAttribute('d',Math.abs(az)<1?'':`M0 -44 A44 44 0 ${big} ${sw} ${x.toFixed(1)} ${y.toFixed(1)}`);
-      document.getElementById('angVal').textContent=(az>0?'+':'')+az+'°';dial.setAttribute('aria-valuenow',az);
-      if(document.activeElement!==tilt){tilt.value=Math.round(el/5)*5;}document.getElementById('angTv').textContent=el+'°';}
-    requestAnimationFrame(loop);})();
-})();
+/* Direcionador de ângulo simples: setas giram 15° (◀ ▶) e inclinam 10° (▲ ▼); o botão do meio volta de frente */
+function angPad(host,cam,ctl,opt){opt=opt||{};
+  host.innerHTML=`<div class="angpad" role="group" aria-label="Direcionador de ângulo">
+    <span class="e"></span><button type="button" data-k="u" title="Inclinar para cima (ver de cima)" aria-label="Inclinar para cima">▲</button><span class="e"></span>
+    <button type="button" data-k="l" title="Girar 15° para a esquerda" aria-label="Girar para a esquerda">◀</button><button type="button" data-k="c" class="c" title="Voltar de frente" aria-label="${opt.cTitle||'Voltar de frente'}">${opt.cLabel||'FRENTE'}</button><button type="button" data-k="r" title="Girar 15° para a direita" aria-label="Girar para a direita">▶</button>
+    <span class="e"></span><button type="button" data-k="d" title="Inclinar para baixo" aria-label="Inclinar para baixo">▼</button><span class="e"></span>
+    <span class="rd" aria-live="polite"></span></div>`;
+  const rd=host.querySelector('.rd');
+  const cur=()=>{const v=cam.position.clone().sub(ctl.target),R=v.length();return {R,az:Math.atan2(v.x,v.z)*180/Math.PI,el:Math.asin(Math.max(-1,Math.min(1,v.y/R)))*180/Math.PI};};
+  let tw=null;
+  const go=(az,el)=>{const c=cur(),a0=c.az,e0=c.el;el=Math.max(-30,Math.min(80,el));let da=az-a0;while(da>180)da-=360;while(da<-180)da+=360;
+    if(opt.before)opt.before();const t0=performance.now(),D=reduce?1:260;cancelAnimationFrame(tw);
+    const step=t=>{const k=Math.min(1,(t-t0)/D),q=k*k*(3-2*k),a=(a0+da*q)*Math.PI/180,e=(e0+(el-e0)*q)*Math.PI/180;
+      cam.position.copy(ctl.target).add(new THREE.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),Math.cos(a)*Math.cos(e)).multiplyScalar(c.R));ctl.update();if(k<1)tw=requestAnimationFrame(step);};
+    tw=requestAnimationFrame(step);};
+  host.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{const c=cur(),k=b.dataset.k,az=Math.round(c.az/15)*15,el=Math.round(c.el/10)*10;
+    if(k==='l')go(az-15,c.el);if(k==='r')go(az+15,c.el);if(k==='u')go(c.az,el+10);if(k==='d')go(c.az,el-10);if(k==='c')go(0,opt.frontEl||0);}));
+  let last='';(function loop(){const c=cur(),t=`↻ ${Math.round(c.az)>0?'+':''}${Math.round(c.az)}°  ↕ ${Math.round(c.el)}°`;if(t!==last){last=t;rd.textContent=t;}requestAnimationFrame(loop);})();}
+angPad(document.getElementById('angw'),camera,controls,{before:()=>{camTarget=null;['persp','front','side'].forEach(n=>{const b=document.getElementById('v-'+n);if(b)b.setAttribute('aria-pressed','false');});}});
 /* Só a persiana: esconde a porta, deixa a caixa transparente e faz a persiana subir e descer */
 let PONLY=false,PPLAY=true,PMARK=null,PT0=0;
 const PKEEP=['MN-001','MN-039','MN-032','MN-002','MN-015','LAM-45','MN-003'],PGLASS=['MN-001','MN-039','MN-032','MN-002'];
@@ -1725,6 +1715,7 @@ sc2.add(new THREE.HemisphereLight(0xffffff,0x7d878e,.8));
 const d2=new THREE.DirectionalLight(0xffffff,.8);d2.position.set(2,3,3);sc2.add(d2);
 const d3=new THREE.DirectionalLight(0xffffff,.35);d3.position.set(-2,-1,-2);sc2.add(d3);
 const ctl2=new THREE.OrbitControls(cam2,r2.domElement);ctl2.enableZoom=true;ctl2.enablePan=false;
+setTimeout(()=>angPad(document.getElementById('angw2'),cam2,ctl2,{frontEl:0,cLabel:'0°',cTitle:'Voltar para a posição inicial'}),0);
 ctl2.autoRotate=!matchMedia('(prefers-reduced-motion: reduce)').matches;ctl2.autoRotateSpeed=1.6;ctl2.enableDamping=true;
 ctl2.minDistance=1.5;ctl2.maxDistance=6;
 let prof3d=null,curProf=null;
@@ -1981,6 +1972,7 @@ function setTypo(t){
 /* Modos */
 function setMode(m){
   const cem=m==='cem',wv=m==='wv'||cem;if(wv)m='exp';const was=S.wvOn,wasC=!!S.cemOn;S.wvOn=wv;S.cemOn=cem;
+  {const pr=cem||wv||m==='test';document.getElementById('m-prat').setAttribute('aria-pressed',pr);document.getElementById('pratica').hidden=!pr;if(pr)LASTP=cem?'cem':wv?'wv':'test';}
   document.getElementById('m-wv').setAttribute('aria-pressed',wv&&!cem);document.getElementById('c-wv').hidden=!wv||cem;
   document.getElementById('m-cem').setAttribute('aria-pressed',cem);document.getElementById('c-cem').hidden=!cem;
   if(wv&&S.typo!=='jcr200'){S.wvOn=false;S.cemOn=false;setTypo('jcr200');S.wvOn=true;S.cemOn=cem;}
@@ -2014,6 +2006,7 @@ function setMode(m){
 }
 document.getElementById('m-exp').addEventListener('click',()=>setMode('exp'));
 document.getElementById('m-test').addEventListener('click',()=>setMode('test'));
+var LASTP='test';document.getElementById('m-prat').addEventListener('click',()=>setMode(LASTP));
 document.getElementById('m-wv').addEventListener('click',()=>setMode('wv'));
 document.getElementById('m-cem').addEventListener('click',()=>setMode('cem'));
 /* ---- Desafio CEM: Opções de Montagem A2 (Janela de correr 2 folhas, Suprema) como no CEM ---- */
