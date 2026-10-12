@@ -159,6 +159,7 @@ aside{display:flex;flex-direction:column;gap:14px;min-width:0}
 .cemopt .q{color:#d6dae1;margin-bottom:4px}.cemopt label{display:flex;gap:6px;align-items:center;padding:2px 0;color:#fff}.cemopt .lg{margin-top:5px;font-size:11px;font-weight:600;color:#c3c8d1;text-transform:uppercase}
 .cemopt .wvsee{margin-top:6px}
 .cempane .cemchk label,.cempane .cemopt label{justify-content:flex-start;text-align:left;flex-direction:row}.cempane .cemchk input,.cempane .cemopt input{width:auto;flex:none;margin:0;padding:0;background:none;border:0;accent-color:#e8eaee}
+.card.cem .score{color:#e8eaee}.card.cem .tbar{background:#5a6070}
 .cemwarn{font-size:11px;font-weight:600;color:#e8eaee;margin:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .card h2{font-family:var(--f-display);font-size:15px;font-weight:600;margin:0;text-transform:uppercase;letter-spacing:.06em}
@@ -331,19 +332,21 @@ details.card:not([open]){gap:0}
       <div class="card cem" id="c-cem" hidden>
         <div class="cemtit"><span>Opções de Montagem · A2</span><small>JANELA DE CORRER – 2 FOLHAS – LINHA SUPREMA</small></div>
         <div class="wvped" id="cmPed"></div>
+        <div class="score cemsc"><span>Tempo <b id="cmT">0:00</b> / <b id="cmL">8:00</b></span></div><div class="tbar"><i id="cmBar"></i></div>
         <div class="cemtabs" role="tablist"><button type="button" data-t="ig" aria-pressed="true">Informações Gerais</button><button type="button" data-t="vd" aria-pressed="false">Vidros</button><button type="button" data-t="om" aria-pressed="false">Opções de Montagem</button></div>
         <div class="cempane" id="cmIG"></div><div class="cempane" id="cmVD" hidden></div><div class="cempane" id="cmOM" hidden></div>
         <p class="cemwarn">ATENÇÃO: A especificação incorreta para os valores das opções de montagem poderá trazer inconsistências para o cálculo da esquadria.</p>
-        <div class="wvact"><button class="btn" id="cmCheck" type="button">Conferir respostas</button><button class="btn sec" id="cmNew" type="button">Novo pedido</button></div>
+        <div class="wvact"><button class="btn" id="cmCheck" type="button">Conferir respostas</button><button class="btn sec" id="cmNew" type="button">↻ Nova simulação</button></div>
         <div class="wvres" id="cmRes" hidden></div>
         <details class="wvlist" open><summary>Lista gerada (perfis e componentes)</summary><div id="cmList"></div></details>
       </div>
       <div class="card" id="c-wv" hidden>
         <h2>Resposta de variáveis</h2>
         <div class="wvped" id="wvPed"></div>
+        <div class="score"><span>Tempo <b id="wvT">0:00</b> / <b id="wvL">5:00</b></span></div><div class="tbar"><i id="wvBar"></i></div>
         <p class="note" id="wvNote">Leia o pedido e responda as variáveis como no WVetro. A janela 3D muda junto com cada resposta. No fim, clique em Conferir respostas.</p>
         <div class="wvq" id="wvQ"></div>
-        <div class="wvact" id="wvAct"><button class="btn" id="wvCheck" type="button">Conferir respostas</button><button class="btn sec" id="wvNew" type="button">Novo pedido</button></div>
+        <div class="wvact" id="wvAct"><button class="btn" id="wvCheck" type="button">Conferir respostas</button><button class="btn sec" id="wvNew" type="button">↻ Nova simulação</button></div>
         <div class="wvres" id="wvRes" hidden></div>
         <details class="wvlist" open><summary>Lista gerada (perfis e componentes)</summary><div id="wvList"></div></details>
       </div>
@@ -1987,7 +1990,7 @@ function cemPost(){if(!S.cemOn||!S.cm)return;group.traverse(o=>{if(!o.isMesh)ret
 function cemApply(focus){cemToWv();for(const k in CM)delete CM[k];build();cemList();if(focus)wvShow(focus.k,focus.row);}
 function cemNewPed(){const ks=CMQ.filter(q=>q.o.length>1).map(q=>q.k),pick=[];while(pick.length<5){const k=ks[Math.floor(Math.random()*ks.length)];if(!pick.includes(k))pick.push(k);}
   const T=Object.assign({},CMDEF);pick.forEach(k=>{const o=CMQ.find(q=>q.k===k).o.filter(x=>x[0]!==CMDEF[k]);T[k]=o[Math.floor(Math.random()*o.length)][0];});
-  T.L=800+50*Math.floor(Math.random()*29);T.H=800+50*Math.floor(Math.random()*23);T.trat=CMTRAT[Math.floor(Math.random()*CMTRAT.length)][0];CMP_={T,pick};
+  tmReset('cm');TMR.cm.timeout=false;CT.set(0,ctY(),0);camTarget=viewPos(curView);T.L=800+50*Math.floor(Math.random()*29);T.H=800+50*Math.floor(Math.random()*23);T.trat=CMTRAT[Math.floor(Math.random()*CMTRAT.length)][0];CMP_={T,pick};
   S.cm=cemNew();S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;
   const L=k=>{const q=CMQ.find(x=>x.k===k);return q.l.toLowerCase()+': '+q.o.find(o=>o[0]===T[k])[1].toLowerCase();};
   document.getElementById('cmPed').innerHTML=`<b>Pedido do cliente · JCR 200 Suprema</b><ul><li>medida ${T.L} × ${T.H} mm (L × H)</li><li>tratamento: ${CMTRAT.find(x=>x[0]===T.trat)[1].toLowerCase()}</li><li>vidro temperado 6 mm incolor (mercado)</li>${pick.map(k=>`<li>${L(k)}</li>`).join('')}<li>as demais opções ficam no padrão do CEM</li></ul>`;
@@ -2012,7 +2015,7 @@ function cemRender(){p3dHomeBack();const a=S.cm,opt=(arr,v,ph)=>(ph?`<option val
   document.getElementById('cmIG').querySelectorAll('[data-f]').forEach(el=>el.addEventListener('change',()=>{const f=el.dataset.f;a[f]=el.type==='number'?(el.value===''?'':+el.value):el.value;
     const box=el.closest('.cemf');box.classList.remove('ok','bad');
     if(f==='L'||f==='H'){const v=+el.value,mx=f==='L'?2200:1900;if(el.value!==''&&(v<800||v>mx)){box.classList.add('bad');el.title='Fora da medida mínima/máxima do fabricante';}}
-    trk('cem_resp',{k:f,v:a[f]});cemApply();}));
+    tmStart('cm');trk('cem_resp',{k:f,v:a[f]});cemApply();}));
   const fil=a.fil;
   document.getElementById('cmVD').innerHTML=`<div class="cemsub">Necessidade da Tipologia:</div><div class="cemchk">${Object.keys(CMFIL).map(g=>`<fieldset><legend>${CMFLN[g]}</legend>${CMFIL[g].map(v=>`<label><input type="checkbox" data-g="${g}" value="${v}"${(fil[g]||[]).includes(v)?' checked':''}>${v}</label>`).join('')}</fieldset>`).join('')}</div>
     <div class="cemsub">Vidros encontrados</div><div id="cmVL"></div>
@@ -2022,7 +2025,7 @@ function cemRender(){p3dHomeBack();const a=S.cm,opt=(arr,v,ph)=>(ph?`<option val
     const any=Object.values(fil).some(x=>x.length);
     document.getElementById('cmVL').innerHTML=ok?`<table class="cemvt"><tr><th>Código</th><th>Descrição</th><th>Esp.</th><th>Cor</th><th>Preço/M²</th></tr><tr data-v="V-TEMP-06"${a.vidro?' class="sel"':''}><td>V-TEMP-06</td><td>Temperado de 6 mm</td><td>6,00</td><td>INCOLOR</td><td>170,00</td></tr></table><p class="cemlim" style="margin:4px 0 0">Clique no vidro para selecionar para VIDRO FOLHA.</p>`
       :`<p class="cemlim" style="margin:0">${any?'Nenhum vidro com esses filtros. Confira referência, processamento, espessura e cor do pedido.':'Marque os filtros da necessidade da tipologia.'}</p>`;
-    const tr=document.querySelector('#cmVL tr[data-v]');if(tr)tr.addEventListener('click',()=>{a.vidro='V-TEMP-06';trk('cem_resp',{k:'vidro',v:a.vidro});cemRender();cemTab('vd');cemApply();});};
+    const tr=document.querySelector('#cmVL tr[data-v]');if(tr)tr.addEventListener('click',()=>{a.vidro='V-TEMP-06';tmStart('cm');trk('cem_resp',{k:'vidro',v:a.vidro});cemRender();cemTab('vd');cemApply();});};
   document.getElementById('cmVD').querySelectorAll('input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>{const g=c.dataset.g,s=fil[g]||(fil[g]=[]);if(c.checked)s.push(c.value);else s.splice(s.indexOf(c.value),1);vl();}));vl();
   {const b=document.getElementById('cmVRm');if(b)b.addEventListener('click',()=>{a.vidro='';cemRender();cemTab('vd');cemApply();});}
   document.getElementById('cmOM').innerHTML=CMQ.map(q=>{const o=q.o.find(x=>x[0]===a[q.k])||q.o[0],i=CMN(q,o[0]);
@@ -2032,7 +2035,7 @@ function cemRender(){p3dHomeBack();const a=S.cm,opt=(arr,v,ph)=>(ph?`<option val
     r.querySelector(':scope>button').addEventListener('click',()=>{const on=!r.classList.contains('on');document.querySelectorAll('.cemrow.on').forEach(x=>x.classList.remove('on'));if(on){r.classList.add('on');CMOPEN=k;}else CMOPEN=null;p3dHomeBack();});
     r.querySelectorAll('input[type=radio]').forEach(x=>x.addEventListener('change',()=>{a[k]=x.value;const o=q.o.find(y=>y[0]===x.value),i=CMN(q,o[0]);
       r.querySelector('.v').textContent=i+' - '+o[1];r.querySelector('.lg').textContent=o[2];r.classList.remove('ok','bad');document.getElementById('cmRes').hidden=true;
-      trk('cem_resp',{k,v:a[k]});cemApply(CMWK[k]?{k:CMWK[k],row:r}:null);}));
+      tmStart('cm');trk('cem_resp',{k,v:a[k]});cemApply(CMWK[k]?{k:CMWK[k],row:r}:null);}));
     const sb=r.querySelector('.wvsee');if(sb)sb.addEventListener('click',()=>{cemToWv();wvShow(CMWK[k],r);});});
   cemList();}
 function cemList(){const a=S.cm,w=S.wv,m=(w.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
@@ -2048,9 +2051,9 @@ function cemList(){const a=S.cm,w=S.wv,m=(w.M||'+').split('+'),rows=[],cr=[],add
   if(a.U!=='sem'&&a.TC==='90')add(cr,'','Cantoneira do contramarco 90° (código a confirmar)','4 un');
   if(a.A==='reto'){const nP=L=>Math.max(2,Math.ceil(L/450)+1),n=2*nP(S.h-120)+2*nP(S.w-120);add(cr,'NYL-190','Presilha de nylon do alisar',n+' un');add(cr,'PAR-936','Parafuso da presilha',n+' un');}
   const gl=a.vidro?`<tr><td>V-TEMP-06</td><td>Vidro temperado 6 mm incolor · VIDRO FOLHA</td><td class="q">2 un</td></tr>`:'';
-  document.getElementById('cmList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Qtd</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes (cor ${a.CO==='preto'?'preta':'branca'})</td></tr>${cr.join('')}${gl?`<tr><td colspan="3" class="sub">Vidros</td></tr>${gl}`:''}</table>
+  document.getElementById('cmList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Pç por tipologia</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes · un por tipologia (cor ${a.CO==='preto'?'preta':'branca'})</td></tr>${cr.join('')}${gl?`<tr><td colspan="3" class="sub">Vidros</td></tr>${gl}`:''}</table>
     <p class="note">Esquadria ${S.w} × ${S.h} mm · ${CMTRAT.find(x=>x[0]===(a.trat||'natural'))[1].toLowerCase()} · folgas ${a.X} mm (largura) e ${a.Y} mm (altura, em cima).</p>`;}
-function cemCheck(){if(!CMP_)return;const T=CMP_.T,a=S.cm,errs=[];let ok=0,tot=0;
+function cemCheck(){if(!CMP_)return;const T=CMP_.T,a=S.cm,errs=[],ms=tmStop('cm'),to=!!TMR.cm.timeout;let ok=0,tot=0;
   const chk=(good,msg)=>{tot++;if(good)ok++;else errs.push(`<li>${msg}</li>`);};
   const igB=f=>document.querySelector(`#cmIG .cemf[data-c="${f}"]`);
   [['L','Largura'],['H','Altura']].forEach(([f,n])=>{const g=+a[f]===T[f];chk(g,`<b>${n}:</b> o pedido é ${T[f]} mm.`);const b=igB(f);if(b){b.classList.toggle('ok',g);b.classList.toggle('bad',!g);}});
@@ -2058,13 +2061,22 @@ function cemCheck(){if(!CMP_)return;const T=CMP_.T,a=S.cm,errs=[];let ok=0,tot=0
   chk(a.vidro==='V-TEMP-06','<b>Vidros:</b> filtre MERCADO + Vidro Temperado + 6 mm + INCOLOR e selecione o V-TEMP-06 para VIDRO FOLHA.');
   CMQ.forEach(q=>{const g=a[q.k]===T[q.k],r=document.querySelector(`.cemrow[data-k="${q.k}"]`);r.classList.toggle('ok',g);r.classList.toggle('bad',!g);
     chk(g,`<b>${q.l}:</b> ${CMP_.pick.includes(q.k)?'o pedido pede':'fica no padrão'} → ${q.o.find(o=>o[0]===T[q.k])[1]}`);});
-  const pct=Math.round(ok/tot*100),st=pct===100?3:pct>=85?2:pct>=60?1:0,el=document.getElementById('cmRes');
-  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${pct===100?'Parabéns! Esquadria lançada certinha no CEM.':pct>=85?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%).${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
-  el.hidden=false;trk('cem',{t:'jcr200',ok,tot,pct,stars:st});}
+  const pct=Math.round(ok/tot*100),st=to?0:pct===100?3:pct>=85?2:pct>=60?1:0,el=document.getElementById('cmRes');
+  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Esquadria lançada certinha no CEM.':pct>=85?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${tot} itens (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
+  el.hidden=false;trk('cem',{t:'jcr200',ok,tot,pct,stars:st,ms,esgotado:to});}
 document.getElementById('cmCheck').addEventListener('click',cemCheck);
 document.getElementById('cmNew').addEventListener('click',cemNewPed);
 /* ---- Desafio WVetro: perguntas, lista e pedido do cliente ---- */
 let WVM='livre',WVP=null;
+/* cronômetro dos desafios WVetro e CEM: começa na 1ª resposta, para no Conferir; sem placar de acertos durante */
+const TMR={wv:{t0:0,fin:0,lim:300000,id:'wv'},cm:{t0:0,fin:0,lim:480000,id:'cm'}};
+function tmStart(k){const t=TMR[k];if(!t.t0&&!t.fin)t.t0=Date.now();}
+function tmReset(k){const t=TMR[k];t.t0=0;t.fin=0;tmDraw(k);}
+function tmStop(k){const t=TMR[k];if(t.t0&&!t.fin)t.fin=Date.now();return t.t0?(t.fin||Date.now())-t.t0:0;}
+function tmDraw(k){const t=TMR[k],el=t.t0?((t.fin||Date.now())-t.t0):0,f=Math.min(1,el/t.lim),bar=document.getElementById(t.id+'Bar');if(!bar)return;
+  document.getElementById(t.id+'T').textContent=fmtT(el);document.getElementById(t.id+'L').textContent=fmtT(t.lim);bar.style.width=(f*100)+'%';bar.className=f>=1?'end':f>.75?'warn':'';
+  if(t.t0&&!t.fin&&el>=t.lim){t.fin=t.t0+t.lim;t.timeout=true;(k==='wv'?wvCheck:cemCheck)();}}
+setInterval(()=>{if(S.wvOn&&!S.cemOn)tmDraw('wv');if(S.cemOn)tmDraw('cm');},1000);
 const WVTXT={C:{'CM-200':'contramarco estreito, de 26,5 mm','CM-060':'contramarco de 38 mm','CM-174':'contramarco largo, de 60 mm (parede grossa)'},
   W:{'45':'cantos do contramarco em meia-esquadria (45°)','90':'cantos do contramarco retos (90°), com cantoneira'},
   A:{'MP-347':'acabamento do lado de dentro do ambiente','CT-001':'acabamento no centro da parede'},
@@ -2102,7 +2114,7 @@ function wvRender(){p3dHomeBack();const q=document.getElementById('wvQ'),a=S.wv;
     ${x.n!=null?'<span class="warn">Medida de auxílio para o plano de corte. Não alterar sem orientação técnica da produção da serralheria.</span>':''}</div>`).join('');
   q.querySelectorAll('.wvrow').forEach(r=>{const k=r.dataset.k,el=r.querySelector('select,input');
     el.addEventListener('change',()=>{S.wv[k]=el.tagName==='INPUT'?(+el.value||0):el.value;r.classList.remove('ok','bad');document.getElementById('wvRes').hidden=true;
-      trk('wv_resp',{k,v:S.wv[k]});build();wvList();wvShow(k,r);});
+      tmStart('wv');trk('wv_resp',{k,v:S.wv[k]});build();wvList();wvShow(k,r);});
     r.querySelector('.wvsee').addEventListener('click',()=>wvShow(k,r));});
   wvList();}
 function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,n,q)=>arr.push(`<tr><td>${c||'—'}</td><td>${n}</td><td class="q">${q}</td></tr>`);
@@ -2118,18 +2130,18 @@ function wvList(){const a=S.wv,m=(a.M||'+').split('+'),rows=[],cr=[],add=(arr,c,
   if(a.F)add(cr,'',a.F==='chave'?'Fecho concha com chave (código a confirmar)':'Fecho concha com trava (código a confirmar)','1 un');
   if(a.W==='90')add(cr,'','Cantoneira do contramarco 90° (código a confirmar)','4 un');
   if(a.A==='MP-347'){const nP=L=>Math.max(2,Math.ceil(L/450)+1),n=2*nP(S.h-120)+2*nP(S.w-120);add(cr,'NYL-190','Presilha de nylon do alisar',n+' un');add(cr,'PAR-936','Parafuso de fixação da presilha',n+' un');}
-  document.getElementById('wvList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Qtd</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes que mudam com as respostas</td></tr>${cr.join('')}</table>
+  document.getElementById('wvList').innerHTML=`<table><tr><th>Código</th><th>Perfil</th><th class="q">Pç por tipologia</th></tr>${rows.join('')}<tr><td colspan="3" class="sub">Componentes que mudam com as respostas · un por tipologia</td></tr>${cr.join('')}</table>
     <p class="note">Medidas de corte entram quando tivermos a lista do WVetro para conferir. Folgas: ${a.X} mm na largura e ${a.Y} mm na altura.</p>`;}
-function wvNewPed(){S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y};
+function wvNewPed(){tmReset('wv');CT.set(0,ctY(),0);camTarget=viewPos(curView);TMR.wv.timeout=false;S.sel=null;S.find=null;S.comp=null;compPinned=null;curProf=null;const keys=WVQ.filter(x=>!x.n).map(x=>x.k);WVP={X:WVDEF.X,Y:WVDEF.Y};
   keys.forEach(k=>{const o=WVQ.find(x=>x.k===k).o;WVP[k]=o[Math.floor(Math.random()*o.length)][0];});
   document.getElementById('wvPed').innerHTML=`<b>Pedido do cliente · JCR 200 · ${S.w} × ${S.h} mm</b><ul>${keys.map(k=>`<li>${WVTXT[k][WVP[k]]}</li>`).join('')}<li>folgas padrão da serralheria</li></ul>`;
   WVQ.forEach(x=>{S.wv[x.k]=x.n!=null?x.n:'';});document.getElementById('wvRes').hidden=true;wvRender();build();trk('wv_pedido',{p:WVP});}
-function wvCheck(){if(!WVP)return;let ok=0;const errs=[];
+function wvCheck(){if(!WVP)return;let ok=0;const errs=[],ms=tmStop('wv'),to=!!TMR.wv.timeout;
   WVQ.forEach(x=>{const r=document.querySelector(`.wvrow[data-k="${x.k}"]`),good=String(S.wv[x.k])===String(WVP[x.k]);r.classList.toggle('ok',good);r.classList.toggle('bad',!good);
     if(good)ok++;else errs.push(`<li><b>${x.k} – ${x.l}:</b> ${x.n!=null?`o padrão é ${x.n} mm (só muda com orientação da produção)`:`o pedido pede “${WVTXT[x.k][WVP[x.k]]}” → ${(x.o.find(o=>o[0]===WVP[x.k])||[])[1]}`}</li>`);});
-  const pct=Math.round(ok/WVQ.length*100),st=pct===100?3:pct>=80?2:pct>=50?1:0,el=document.getElementById('wvRes');
-  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${WVQ.length} variáveis (${pct}%).${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
-  el.hidden=false;trk('wvetro',{t:'jcr200',ok,tot:WVQ.length,pct,stars:st});}
+  const pct=Math.round(ok/WVQ.length*100),st=to?0:pct===100?3:pct>=80?2:pct>=50?1:0,el=document.getElementById('wvRes');
+  el.innerHTML=`<div class="stars">${'★'.repeat(st)}<i>${'★'.repeat(3-st)}</i></div><b>${to?'Tempo esgotado!':pct===100?'Parabéns! Lista certinha.':pct>=80?'Muito bem! Faltou pouco.':'Continue treinando.'}</b> Você acertou ${ok} de ${WVQ.length} variáveis (${pct}%) em ${fmtT(ms)}.${errs.length?`<ul>${errs.join('')}</ul>`:''}`;
+  el.hidden=false;trk('wvetro',{t:'jcr200',ok,tot:WVQ.length,pct,stars:st,ms,esgotado:to});}
 document.getElementById('wvCheck').addEventListener('click',wvCheck);
 document.getElementById('wvNew').addEventListener('click',wvNewPed);
 
