@@ -935,17 +935,20 @@ function build(){
     const piece=(c,len,dir,out,pos,mode,zpos,lbl)=>{const d=SHAPES[c],k=sc(d);let ymin=1e9;d.s.forEach(o=>o.o.forEach(q=>ymin=Math.min(ymin,q[1]*k)));
       const shapes=d.s.map(o=>{const sh=new THREE.Shape(o.o.map(([px,py])=>new THREE.Vector2(px*k,py*k-ymin)));o.h.forEach(h=>sh.holes.push(new THREE.Path(h.map(([px,py])=>new THREE.Vector2(px*k,py*k-ymin)))));return sh;});
       const g=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:1});g.translate(0,0,-len/2);
-      const P=g.attributes.position,hh=d.h*k;for(let i=0;i<P.count;i++){const z=P.getZ(i),y=P.getY(i),sg=z>0?1:-1;if(mode==='m')P.setZ(i,z+sg*y);else if(mode==='f')P.setZ(i,z+sg*hh);}
+      const P=g.attributes.position,hh=d.h*k;for(let i=0;i<P.count;i++){const z=P.getZ(i),y=P.getY(i),sg=z>0?1:-1;if(mode==='m')P.setZ(i,z+sg*y);else if(mode==='mi')P.setZ(i,z-sg*y);}
       g.applyMatrix4(new THREE.Matrix4().makeBasis(Z,out,dir));g.computeVertexNormals();
       const mat=matFor('marco',c,c.startsWith('CM')?CMM:ARM);mat.side=THREE.DoubleSide;const m=new THREE.Mesh(g,mat);m.position.copy(pos);m.position.z=zpos;
-      m.userData={zone:c,lbl,part:'marco',vert:Math.abs(dir.y)>.5,code:c};group.add(m);profMeshes.push(m);zoneMeshes.push(m);if(lbl)labelObjs.push(m);LEN[c]=(LEN[c]||0)+len;return m;};
+      m.userData={zone:c,lbl,part:'marco',vert:Math.abs(dir.y)>.5,code:c,cap:{shapes,ex:Z,ey:out,ez:dir}};group.add(m);profMeshes.push(m);zoneMeshes.push(m);if(lbl)labelObjs.push(m);LEN[c]=(LEN[c]||0)+len;return m;};
     const CMM=new THREE.MeshStandardMaterial({color:0x6a747b,metalness:.45,roughness:.5}),ARM=new THREE.MeshStandardMaterial({color:0xd9dee2,metalness:.2,roughness:.5});
     const C=a.C||'CM-200',cw=SHAPES[C].w/1000,ch=SHAPES[C].h/1000,ix=W/2+fx,iy=H/2+fy,V3=(x,y,z)=>new THREE.Vector3(x,y,z);
-    if(a.C)[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0,len=vert?2*iy:2*ix,mode=a.W==='45'?'m':(vert?'f':'');
-      piece(C,len,vert?Y:X,V3(sx,sy,0),V3(sx*ix,sy*iy,0),mode,0,i===0);});
-    if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.022,.022,cw*.7),cm);b.position.set(sx*(ix+.011),sy*(iy+.011),0);group.add(b);}));}
-    if(a.A==='MP-347'){const zi=cw/2+SHAPES['MP-347'].w/2000+.001;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
-      piece('MP-347',vert?2*iy:2*ix,vert?Y:X,V3(sx,sy,0),V3(sx*ix,sy*iy,0),'m',zi,i===0);});}
+    /* contramarco: aba de 24 mm no lado externo, alma apoiada no vão da alvenaria, garras para dentro da massa; a janela encosta na aba */
+    const DSL=PW(fr.s)/2,yw=C==='CM-174'?.0125:.0098,zc=-DSL+cw/2-.0013,ox=ix+yw,oy=iy+yw;
+    if(a.C)[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0,m45=a.W==='45',len=vert?2*oy:(m45?2*ox:2*(ox-ch));
+      piece(C,len,vert?Y:X,V3(-sx,-sy,0),V3(sx*ox,sy*oy,0),m45?'mi':'',zc,i===0);});
+    if(a.C&&a.W==='90'){const cm=new THREE.MeshStandardMaterial({color:0x3b4045,roughness:.7});[-1,1].forEach(sx=>[-1,1].forEach(sy=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,cw*.6),cm);b.position.set(sx*(ox-.012),sy*(oy-.012),zc);group.add(b);}));}
+    /* arremate: moldura com corte 45° sobre o quadro (SU-001 / SU-003 / SU-002) pelo lado de dentro */
+    if(a.A==='MP-347'){const aw=SHAPES['MP-347'].w/1000,zi=DSL+aw/2+.001,ax=ix-.012,ay=iy-.012;[[-1,0],[1,0],[0,-1],[0,1]].forEach(([sx,sy],i)=>{const vert=sx!==0;
+      piece('MP-347',vert?2*ay:2*ax,vert?Y:X,V3(sx,sy,0),V3(sx*ax,sy*ay,0),'m',zi,i===0);});}
     RK=RK0;}
   RK='F-left';prof(group,fr.s,H+PBX,LROT?neg(Z):Z,X,LROT?Y:Y,-W/2+FS/2,PBX/2,LZ,'marco',fr.s,M.al,true);
   RK='F-right';prof(group,fr.s,H+PBX,Z,neg(X),Y,W/2-FS/2,PBX/2,LZ,'marco',fr.s,M.al,true);
